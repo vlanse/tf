@@ -5,6 +5,8 @@ CONFIG += release
 
 QT += widgets
 
+CONFIG += c++11
+
 UI_DIR = shadow/ui
 OBJECTS_DIR = shadow/obj
 MOC_DIR = shadow/moc
