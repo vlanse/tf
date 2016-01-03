@@ -149,7 +149,7 @@ namespace TF
 
   void DirViewPanel::QuickSearchHandler(QKeyEvent event)
   {
-    if (!event.text().isEmpty() && !QuickSearchMode && event.key() != Qt::Key_Return)
+    if (!event.text().isEmpty() && !QuickSearchMode && !(event.key() == Qt::Key_Return || event.key() == Qt::Key_Tab))
     {
       qDebug() << "Quick search mode switch, key is\"" << event.text() << "\"";
       SwitchQuickSearchMode();
