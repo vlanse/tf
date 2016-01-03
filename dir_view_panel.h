@@ -8,6 +8,7 @@
 #pragma once
 
 #include <QDir>
+#include <QFocusEvent>
 #include <QKeyEvent>
 #include <QWidget>
 
@@ -16,7 +17,7 @@ class Ui_DirViewPanel;
 namespace TF
 {
   class DirModel;
-  class KeyPressFilter;
+  class QuickSearchKeyEventHandler;
 
   class DirViewPanel: public QWidget
   {
@@ -33,12 +34,18 @@ namespace TF
     void OnItemActivated(const QModelIndex& index);
     void OnAddressBarEnter();
     void OnKeyPressed(QKeyEvent event);
+    void OnQuickSearch(const QString&);
+    void OnFocusEvent(QFocusEvent event);
   private:
     void HandleItemSelection(const QFileInfo& item);
     void HandleDirSelection(const QDir& dir);
+    void QuickSearchHandler(QKeyEvent event);
+    void SwitchQuickSearchMode();
 
     Ui_DirViewPanel* Ui;
 
     DirModel* Model;
+    QuickSearchKeyEventHandler* QuickSearchHandlerDelegate;
+    bool QuickSearchMode;
   };
 } // namespace TF

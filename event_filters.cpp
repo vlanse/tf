@@ -36,4 +36,19 @@ namespace TF
   {
     CodesToIntercept << keyCode;
   }
+
+  FocusFilter::FocusFilter(QObject* parent)
+    : QObject(parent)
+  {
+  }
+
+  bool FocusFilter::eventFilter(QObject* object, QEvent* event)
+  {
+    if (event->type() == QEvent::FocusIn || event->type() == QEvent::FocusOut)
+    {
+      QFocusEvent *focusEvent = static_cast<QFocusEvent*>(event);
+      emit GotFocusEvent(*focusEvent);
+    }
+    return QObject::eventFilter(object, event);
+  }
 } // namespace TF

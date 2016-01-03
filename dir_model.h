@@ -23,6 +23,7 @@ namespace TF
     QFileInfo GetItem(const QModelIndex& index) const;
     QModelIndex GetIndex(const QFileInfo& info) const;
     QModelIndex GetIndex(const QDir& dir) const;
+    QModelIndexList Search(const QString& search) const;
 
     virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex& parent = QModelIndex()) const;

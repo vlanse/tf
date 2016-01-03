@@ -136,6 +136,18 @@ namespace TF
     return index(RootDir.entryList().indexOf(dir.dirName()), 0);
   }
 
+  QModelIndexList DirModel::Search(const QString& search) const
+  {
+    QStringList nameFilters;
+    nameFilters << search;
+    QModelIndexList result;
+    foreach(const QFileInfo& entry, RootDir.entryInfoList(nameFilters))
+    {
+      result << GetIndex(entry);
+    }
+    return result;
+  }
+
   QVariant DirModel::data(const QModelIndex& index, int role) const
   {
     if (!index.isValid() || RootDir.path().isEmpty())

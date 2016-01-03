@@ -57,6 +57,9 @@
      </attribute>
     </widget>
    </item>
+   <item>
+    <widget class="QLineEdit" name="SearchEdit"/>
+   </item>
   </layout>
  </widget>
  <resources/>

@@ -6,6 +6,7 @@
  */
 #pragma once
 
+#include <QFocusEvent>
 #include <QKeyEvent>
 #include <QList>
 #include <QObject>
@@ -24,5 +25,16 @@ namespace TF
     bool eventFilter(QObject* object, QEvent* event);
   private:
     QList<int> CodesToIntercept;
+  };
+
+  class FocusFilter: public QObject
+  {
+    Q_OBJECT
+  public:
+    FocusFilter(QObject* parent);
+  signals:
+    void GotFocusEvent(QFocusEvent event);
+  protected:
+    bool eventFilter(QObject* object, QEvent* event);
   };
 } // namespace TF
