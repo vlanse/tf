@@ -149,7 +149,10 @@ namespace TF
 
   void DirViewPanel::QuickSearchHandler(QKeyEvent event)
   {
-    if (!event.text().isEmpty() && !QuickSearchMode && !(event.key() == Qt::Key_Return || event.key() == Qt::Key_Tab))
+    if (
+      !event.text().isEmpty() && !QuickSearchMode &&
+      !(event.key() == Qt::Key_Return || event.key() == Qt::Key_Tab)
+      )
     {
       qDebug() << "Quick search mode switch, key is\"" << event.text() << "\"";
       SwitchQuickSearchMode();
@@ -159,17 +162,20 @@ namespace TF
 
     if (QuickSearchMode)
     {
-      if ((event.modifiers() & Qt::MetaModifier) && event.key() == Qt::Key_C)
+      if (event.key() == Qt::Key_Up || event.key() == Qt::Key_Down)
+      {
+        SwitchQuickSearchMode();
+        PostKeyEvent(Ui->DirView, event);
+      }
+      else if ((event.modifiers() & Qt::MetaModifier) && event.key() == Qt::Key_C)
       {
         Ui->SearchEdit->clear();
       }
-
-      if (event.key() == Qt::Key_Escape)
+      else if (event.key() == Qt::Key_Escape)
       {
         SwitchQuickSearchMode();
       }
-
-      if (event.key() == Qt::Key_Return)
+      else if (event.key() == Qt::Key_Return)
       {
         SwitchQuickSearchMode();
 
@@ -187,7 +193,7 @@ namespace TF
   void DirViewPanel::OnQuickSearch(const QString& search)
   {
     qDebug() << "Quick search for:" << search;
-    const QModelIndexList& indices = Model->Search("*" + search + "*");
+    const QModelIndexList& indices = Model->Search(search + "*");
     if (indices.empty())
     {
       QKeyEvent ev(QEvent::KeyPress, Qt::Key_Backspace, Qt::NoModifier);
