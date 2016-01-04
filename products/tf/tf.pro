@@ -9,6 +9,7 @@ CONFIG += c++11
 
 PATH_STEP = ../..
 
+DESTDIR = $${PATH_STEP}/.shadow/bin
 UI_DIR = $${PATH_STEP}/.shadow/ui
 OBJECTS_DIR = $${PATH_STEP}/.shadow/obj
 MOC_DIR = $${PATH_STEP}/.shadow/moc
