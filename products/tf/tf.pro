@@ -7,9 +7,13 @@ QT += widgets
 
 CONFIG += c++11
 
-UI_DIR = shadow/ui
-OBJECTS_DIR = shadow/obj
-MOC_DIR = shadow/moc
+PATH_STEP = ../..
+
+UI_DIR = $${PATH_STEP}/.shadow/ui
+OBJECTS_DIR = $${PATH_STEP}/.shadow/obj
+MOC_DIR = $${PATH_STEP}/.shadow/moc
+
+# Application section
 
 FORMS += \
   ui/dir_view_panel.ui \
@@ -34,3 +38,5 @@ SOURCES += \
   settings.cpp \
   settings_dialog.cpp \
   tab_manager.cpp \
+
+# Platform section
