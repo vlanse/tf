@@ -1,18 +1,12 @@
+PATHSTEP = ../..
 TARGET = tf
 DESCRIPTION = Total Finder File Manager
 TEMPLATE = app
-CONFIG += release
 
+CONFIG += release
 QT += widgets
 
-CONFIG += c++11
-
-PATH_STEP = ../..
-
-DESTDIR = $${PATH_STEP}/.shadow/bin
-UI_DIR = $${PATH_STEP}/.shadow/ui
-OBJECTS_DIR = $${PATH_STEP}/.shadow/obj
-MOC_DIR = $${PATH_STEP}/.shadow/moc
+include($${PATHSTEP}/make/make.pri)
 
 # Application section
 
@@ -39,5 +33,3 @@ SOURCES += \
   settings.cpp \
   settings_dialog.cpp \
   tab_manager.cpp \
-
-# Platform section
