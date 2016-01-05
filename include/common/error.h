@@ -33,11 +33,11 @@ namespace Common
     Error();
     Error(unsigned code);
     Error(const SourceLocation& location, unsigned code);
-    Error(const SourceLocation& location, unsigned code, const std::string& message, bool appSpecific = true);
+    Error(const SourceLocation& location, unsigned code, const std::wstring& message, bool appSpecific = true);
     Error& AddSubError(const Common::Error& other);
     SourceLocation GetSourceLocation() const;
     unsigned GetCode() const;
-    std::string GetMessage() const;
+    std::wstring GetMessage() const;
     bool IsApplicationSpecific() const;
     Ptr GetSubError() const;
     operator unsigned() const;
@@ -45,7 +45,7 @@ namespace Common
   private:
     SourceLocation Loc;
     unsigned Code;
-    std::string Message;
+    std::wstring Message;
     Ptr Sub;
     bool AppSpecific;
   };
@@ -54,8 +54,8 @@ namespace Common
 // TODO: get rid of such errors as soon as possible
 #define UNSPECIFIED_ERROR 0xffffffff
 
-#define MAKE_ERROR(code, message) Common::Error(Common::Error::SourceLocation(__FILE__, __LINE__), code, std::string(message))
+#define MAKE_ERROR(code, message) Common::Error(Common::Error::SourceLocation(__FILE__, __LINE__), code, std::wstring(message))
 #define LAST_WINDOWS_ERROR() Common::GetLastWindowsError(Common::Error::SourceLocation(__FILE__, __LINE__))
-#define QT_MAKE_ERROR(code, message) MAKE_ERROR(code, message.toStdString())
+#define QT_MAKE_ERROR(code, message) MAKE_ERROR(code, message.toStdWString())
 
 #define RETURN_IF_FAILED(x) do { Common::Error error = (x); if (error) return error; } while(0)

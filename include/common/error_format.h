@@ -7,7 +7,7 @@
 
 namespace Common
 {
-  std::string FormatError(const Common::Error& error);
+  std::wstring FormatError(const Common::Error& error);
 } // namespace Common
 
 #endif // COMMON_ERROR_FORMAT_H_

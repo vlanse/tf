@@ -21,7 +21,7 @@ namespace Common
   {
   }
 
-  Error::Error(const Error::SourceLocation& location, unsigned code, const std::string& message, bool appSpecific)
+  Error::Error(const Error::SourceLocation& location, unsigned code, const std::wstring& message, bool appSpecific)
     : Loc(location)
     , Code(code)
     , Message(message)
@@ -39,7 +39,7 @@ namespace Common
     return Code;
   }
 
-  std::string Error::GetMessage() const
+  std::wstring Error::GetMessage() const
   {
     return Message;
   }

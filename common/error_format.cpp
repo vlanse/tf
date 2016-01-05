@@ -6,31 +6,31 @@ namespace Common
 {
   namespace
   {
-    std::string FormatStandaloneError(const Common::Error& err)
+    std::wstring FormatStandaloneError(const Common::Error& err)
     {
-      std::stringstream ss;
+      std::wstringstream ss;
       if (err == Common::Success)
       {
-        return "Success";
+        return L"Success";
       }
       const Error::SourceLocation& loc = err.GetSourceLocation();
       if (loc.File != 0)
       {
         ss << loc.File << ": " << loc.Line << std::endl;
       }
-      std::string kind = "[APP]";
+      std::wstring kind = L"[APP]";
       if (!err.IsApplicationSpecific())
       {
-        kind = "[INT]";
+        kind = L"[INT]";
       }
-      ss << "code "<< err.GetCode() << " " << kind << " (0x" << std::hex << err.GetCode() << "): " << err.GetMessage();
+      ss << L"code "<< err.GetCode() << " " << kind << L" (0x" << std::hex << err.GetCode() << L"): " << err.GetMessage();
       return ss.str();
     }
   } // namespace
 
-  std::string FormatError(const Common::Error& error)
+  std::wstring FormatError(const Common::Error& error)
   {
-    std::stringstream ss;
+    std::wstringstream ss;
     ss << FormatStandaloneError(error);
 
     Error::Ptr sub = error.GetSubError();
