@@ -14,7 +14,8 @@ namespace Common
   enum ModuleCode
   {
     MODULE_TEST = 1,
-    MODULE_COMMON
+    MODULE_COMMON,
+    MODULE_FILE_MANAGER
   };
 
 #define MAKE_MODULE_ERROR(module, code) (module << 16) | code

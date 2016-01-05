@@ -42,6 +42,8 @@ namespace Common
     Ptr GetSubError() const;
     operator unsigned() const;
 
+    static std::wstring Format(const Common::Error& error);
+
   private:
     SourceLocation Loc;
     unsigned Code;
@@ -57,5 +59,6 @@ namespace Common
 #define MAKE_ERROR(code, message) Common::Error(Common::Error::SourceLocation(__FILE__, __LINE__), code, std::wstring(message))
 #define LAST_WINDOWS_ERROR() Common::GetLastWindowsError(Common::Error::SourceLocation(__FILE__, __LINE__))
 #define QT_MAKE_ERROR(code, message) MAKE_ERROR(code, message.toStdWString())
+#define QT_TRACE()
 
 #define RETURN_IF_FAILED(x) do { Common::Error error = (x); if (error) return error; } while(0)

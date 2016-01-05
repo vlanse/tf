@@ -10,10 +10,12 @@ SRC_PATH = .
 INCLUDEDIR = $${PATHSTEP}/include/$${TARGET}
 
 HEADERS += \
-  $${INCLUDEDIR}/error_format.h \
   $${INCLUDEDIR}/error.h \
   $${INCLUDEDIR}/module.h \
+  $${INCLUDEDIR}/string_utils.h 
+  $${INCLUDEDIR}/trace.h \
 
 SOURCES += \
-  $${SRC_PATH}/error_format.cpp \
   $${SRC_PATH}/error.cpp \
+  $${SRC_PATH}/string_utils.cpp \
+  $${SRC_PATH}/trace.cpp \
