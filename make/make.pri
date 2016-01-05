@@ -51,6 +51,8 @@ UI_DIR = $${PATHSTEP}/$${SHADOW_DIR}/obj/$${TARGET}/ui
 
 LIBS += -L$${PATHSTEP}/$${SHADOW_DIR}/lib/$${BUILDMODE}
 
+LIBDIR = $${PATHSTEP}/$${SHADOW_DIR}/lib/$${BUILDMODE}
+
 INCLUDEPATH += \
   $${PATHSTEP} \
   $${PATHSTEP}/include \

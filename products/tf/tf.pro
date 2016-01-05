@@ -10,6 +10,12 @@ include($${PATHSTEP}/make/make.pri)
 
 # Application section
 
+LIBS += \
+  -lcommon \
+
+POST_TARGETDEPS += \
+  $${LIBDIR}/libcommon.a \
+
 FORMS += \
   ui/dir_view_panel.ui \
   ui/main_window.ui \
