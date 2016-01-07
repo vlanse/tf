@@ -8,8 +8,11 @@
 #include "dir_view_panel.h"
 #include "ui_dir_view_panel.h"
 
+#include "create_dir.h"
 #include "dir_model.h"
 #include "event_filters.h"
+
+#include <common/filesystem.h>
 
 #include <QDebug>
 #include <QDesktopServices>
@@ -205,30 +208,55 @@ namespace TF
 
   void DirViewPanel::OnKeyPressed(QKeyEvent event)
   {
-    if (event.key() == Qt::Key_Return)
+    if (event.modifiers() == Qt::NoModifier)
     {
-      const QModelIndex& selection = Ui->DirView->selectionModel()->currentIndex();
-      if (!selection.isValid())
+      if (event.key() == Qt::Key_Return)
       {
-        return;
+        const QModelIndex& selection = Ui->DirView->selectionModel()->currentIndex();
+        if (!selection.isValid())
+        {
+          return;
+        }
+        const QFileInfo& selectedItem = Model->GetItem(selection);
+        HandleItemSelection(selectedItem);
       }
-      const QFileInfo& selectedItem = Model->GetItem(selection);
-      HandleItemSelection(selectedItem);
-    }
-    else if (event.key() == Qt::Key_Tab)
-    {
-      qDebug("Request to change side detected");
-      emit ChangeSideRequest();
-    }
-    else if (event.key() == Qt::Key_F4)
-    {
-      const QModelIndex& selection = Ui->DirView->selectionModel()->currentIndex();
-      QFileInfo file = Model->GetItem(selection);
-      qDebug() << "Request to edit file detected:" << file.absoluteFilePath();
-      QStringList args;
-      args << "-a" << "Sublime Text 2" << file.absoluteFilePath();
-      qDebug() << args;
-      QProcess::startDetached("open", args);
+      else if (event.key() == Qt::Key_Tab)
+      {
+        qDebug("Request to change side detected");
+        emit ChangeSideRequest();
+      }
+      else if (event.key() == Qt::Key_F4)
+      {
+        const QModelIndex& selection = Ui->DirView->selectionModel()->currentIndex();
+        QFileInfo file = Model->GetItem(selection);
+        qDebug() << "Request to edit file detected:" << file.absoluteFilePath();
+        QStringList args;
+        args << "-a" << "Sublime Text 2" << file.absoluteFilePath();
+        qDebug() << args;
+        QProcess::startDetached("open", args);
+      }
+      else if (event.key() == Qt::Key_Delete) // Fn + Backspace
+      {
+        const QModelIndex& selection = Ui->DirView->selectionModel()->currentIndex();
+        if (!selection.isValid())
+        {
+          return;
+        }
+        const QFileInfo& selectedItem = Model->GetItem(selection);
+        qDebug() << "Delete request, path is" << selectedItem.absoluteFilePath();
+
+        Filesys::RemoveDirRecursive(Filesys::Dir(selectedItem.absoluteFilePath().toStdWString()));
+      }
+      else if (event.key() == Qt::Key_F7)
+      {
+        QString newDirPath = Model->GetRoot().absolutePath() + "/";
+        CreateDirDialog* dlg = new CreateDirDialog(this);
+        dlg->exec();
+
+        newDirPath += dlg->GetDirName();
+        qDebug() << "Create directory request, path is" << newDirPath;
+        Filesys::CreateDir(newDirPath.toStdWString());
+      }
     }
   }
 
@@ -245,6 +273,7 @@ namespace TF
 
   void DirViewPanel::HandleDirSelection(const QDir& dir)
   {
+    qDebug() << "Set dir in view:" << dir.absolutePath();
     const QDir& previousDir = Model->GetRoot();
     Model->SetRoot(dir);
     Ui->AddressBar->setText(Model->GetRoot().absolutePath());

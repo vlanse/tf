@@ -15,7 +15,8 @@ namespace Common
   {
     MODULE_TEST = 1,
     MODULE_COMMON,
-    MODULE_FILE_MANAGER
+    MODULE_FILE_MANAGER,
+    MODULE_OS,
   };
 
 #define MAKE_MODULE_ERROR(module, code) (module << 16) | code

@@ -27,7 +27,10 @@ namespace TF
       tabs = new TabManager(container, parent);
 
       DirViewPanel* tab = new DirViewPanel();
-      tab->SetRootDir(QDir("/Users/"));
+
+      // TODO: restore tabs from settings
+      tab->SetRootDir(QDir("/Users/vsemenov/test"));
+
       tabs->AddTab(tab);
       QObject::connect(tabs, SIGNAL(ChangeSideRequest()), parent, SLOT(OnChangeSideRequest()));
 

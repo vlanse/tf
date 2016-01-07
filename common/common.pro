@@ -19,3 +19,13 @@ SOURCES += \
   $${SRC_PATH}/error.cpp \
   $${SRC_PATH}/string_utils.cpp \
   $${SRC_PATH}/trace.cpp \
+  
+
+# Filesystem
+
+HEADERS += \
+  $${INCLUDEDIR}/filesystem.h
+
+SOURCES += \
+  $${SRC_PATH}/filesystem/osx/dir.cpp \
+  $${SRC_PATH}/filesystem/osx/file_info.cpp \

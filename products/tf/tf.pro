@@ -17,11 +17,13 @@ POST_TARGETDEPS += \
   $${LIBDIR}/libcommon.a \
 
 FORMS += \
+  ui/create_dir.ui \
   ui/dir_view_panel.ui \
   ui/main_window.ui \
   ui/settings_dialog.ui \
 
 HEADERS += \
+  create_dir.h \
   dir_model.h \
   dir_view_panel.h \
   event_filters.h \
@@ -31,6 +33,7 @@ HEADERS += \
   tab_manager.h \
 
 SOURCES += \
+  create_dir.cpp \
   dir_model.cpp \
   dir_view_panel.cpp \
   event_filters.cpp \
