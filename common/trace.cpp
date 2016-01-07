@@ -2,6 +2,7 @@
 #include <common/string_utils.h>
 
 #include <algorithm>
+#include <iostream>
 #include <fstream>
 #include <functional>
 #include <cctype>
@@ -39,13 +40,13 @@ namespace Common
       switch (lvl)
       {
       case DEBUG:
-        return L"debug";
+        return L"DBG";
       case INFORMATION:
-        return L"information";
+        return L"INF";
       case WARNING:
-        return L"warning";
+        return L"WRN";
       case ERROR:
-        return L"error";
+        return L"ERR";
       }
       return std::wstring();
     }
@@ -110,5 +111,36 @@ namespace Common
   EventTrace* CreateFileTrace(const std::wstring& filePath)
   {
     return new FileTrace(filePath);
+  }
+
+  class StdErrTrace : public EventTrace
+  {
+  public:
+    StdErrTrace();
+    ~StdErrTrace();
+    virtual void ConsumeEvent(const struct tm, ModuleCode module, EventLevel level, const std::wstring& message);
+  };
+
+  StdErrTrace::StdErrTrace()
+  {
+  }
+
+  StdErrTrace::~StdErrTrace()
+  {
+  }
+
+  void StdErrTrace::ConsumeEvent(const struct tm time, ModuleCode module, EventLevel level, const std::wstring& message)
+  {
+    fprintf(
+      stderr,
+      "%s %s, mod %d >> %s\n",
+      WideStringToString(DecodeLevel(level)).c_str(), WideStringToString(TimeToStr(time)).c_str(),
+      module, WideStringToString(message).c_str()
+    );
+  }
+
+  EventTrace* CreateStdErrTrace()
+  {
+    return new StdErrTrace();
   }
 } // namespace Common

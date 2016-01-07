@@ -31,9 +31,10 @@ namespace Common
   void UnregisterTrace();
 
   EventTrace* CreateFileTrace(const std::wstring& filePath);
+  EventTrace* CreateStdErrTrace();
 }
 
-#define DEBUG(module, msg) Common::Event(module, Common::DEDUG, std::wstring(msg))
+#define DEBUG(module, msg) Common::Event(module, Common::DEBUG, std::wstring(msg))
 #define INFO(module, msg) Common::Event(module, Common::INFORMATION, std::wstring(msg))
 #define WARNING(module, msg) Common::Event(module, Common::WARNING, std::wstring(msg))
 #define ERROR(module, msg) Common::Event(module, Common::ERROR, std::wstring(msg))
