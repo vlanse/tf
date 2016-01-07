@@ -14,6 +14,9 @@ CONFIG(debug, release|debug){
 
 CONFIG += c++11
 
+QMAKE_CXXFLAGS_RELEASE -= -O2
+QMAKE_CXXFLAGS += -g
+
 SHADOW_DIR = .shadow
 
 contains(TEMPLATE, lib){
