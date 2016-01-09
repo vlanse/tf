@@ -1,2 +1,6 @@
 /.shadow/
 Makefile
+.cproject
+.project
+.qmake.stash
+.settings
