@@ -83,6 +83,7 @@ namespace TF
     , Model(new DirModel(this))
     , QuickSearchHandlerDelegate(new QuickSearchKeyEventHandler(std::bind(&DirViewPanel::QuickSearchHandler, this, std::placeholders::_1), this))
     , QuickSearchMode(false)
+    , CurrentRow(0)
   {
     Ui = new Ui_DirViewPanel();
     Ui->setupUi(this);
@@ -115,13 +116,21 @@ namespace TF
   void DirViewPanel::OnDirModelChange()
   {
     // adjust currently selected item
-    const QModelIndex currentIndex = Model->GetIndex(CurrentSelection);
+    QModelIndex currentIndex = Model->GetIndex(CurrentSelection);
     if (!currentIndex.isValid())
     {
-      Ui->DirView->selectionModel()->setCurrentIndex(Model->index(0, 0), QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
-      return;
+      currentIndex = Model->index(0, 0);
+      qDebug() << "!!!" << Model->rowCount() << CurrentRow;
+      if (Model->rowCount() >= CurrentRow)
+      {
+        currentIndex = Model->index(CurrentRow - 1, 0);
+        qDebug() << "!!@@###" << currentIndex.row();
+      }
     }
     Ui->DirView->selectionModel()->setCurrentIndex(currentIndex, QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
+
+    CurrentRow = currentIndex.row();
+    CurrentSelection = Model->GetItem(currentIndex);
   }
 
   void DirViewPanel::OnSelectionChanged(const QModelIndex& current, const QModelIndex& /*previous*/)
@@ -131,6 +140,7 @@ namespace TF
       return;
     }
     CurrentSelection = Model->GetItem(current);
+    CurrentRow = current.row();
   }
 
   void DirViewPanel::SetRootDir(const QDir& dir)

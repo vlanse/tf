@@ -53,5 +53,6 @@ namespace TF
     bool QuickSearchMode;
 
     QFileInfo CurrentSelection;
+    int CurrentRow;
   };
 } // namespace TF
