@@ -10,6 +10,7 @@
 
 #include "create_dir.h"
 #include "dir_model.h"
+#include "edit_file.h"
 #include "event_filters.h"
 
 #include <common/filesystem.h>
@@ -31,6 +32,24 @@ namespace TF
       QKeyEvent * releaseEvent = new QKeyEvent (QEvent::KeyRelease, event.key(), event.modifiers(), event.text());
       qApp->postEvent(widget, pressEvent);
       qApp->postEvent(widget, releaseEvent);
+    }
+
+    void ShellOpenEditorForFile(const QString& file)
+    {
+      QStringList args;
+      args << "-a" << "Sublime Text 2" << file;
+      qDebug() << "Open editor for file with args " << args;
+      QProcess::startDetached("open", args);
+    }
+
+    void EnsureFileExists(const QString& filePath)
+    {
+      QFile f(filePath);
+      if (!f.exists())
+      {
+        f.open(QIODevice::ReadWrite);
+        f.close();
+      }
     }
   } // namespace
 
@@ -238,14 +257,11 @@ namespace TF
       else if (event.key() == Qt::Key_F4)
       {
         qDebug() << "Request to edit file detected:" << CurrentSelection.absoluteFilePath();
-        QStringList args;
-        args << "-a" << "Sublime Text 2" << CurrentSelection.absoluteFilePath();
-        qDebug() << args;
-        QProcess::startDetached("open", args);
+        ShellOpenEditorForFile(CurrentSelection.absoluteFilePath());
       }
       else if (event.key() == Qt::Key_Delete) // Fn + Backspace
       {
-        qDebug() << "Delete request, path is" << CurrentSelection.absoluteFilePath();
+        qDebug() << "Request to delete item, path is" << CurrentSelection.absoluteFilePath();
         Filesys::RemoveDirRecursive(Filesys::Dir(CurrentSelection.absoluteFilePath().toStdWString()));
       }
       else if (event.key() == Qt::Key_F7)
@@ -255,8 +271,22 @@ namespace TF
         dlg->exec();
 
         newDirPath += dlg->GetDirName();
-        qDebug() << "Create directory request, path is" << newDirPath;
+        qDebug() << "Request to create directory, path is" << newDirPath;
         Filesys::CreateDir(newDirPath.toStdWString());
+      }
+    }
+    else if (event.modifiers() == Qt::ShiftModifier)
+    {
+      if (event.key() == Qt::Key_F4)
+      {
+        QString filePath = Model->GetRoot().absolutePath() + "/";
+        EditFileDialog* dlg = new EditFileDialog(this);
+        dlg->exec();
+
+        filePath += dlg->GetFileName();
+        qDebug() << "Request to edit file by entered name, full path is" << filePath;
+        EnsureFileExists(filePath);
+        ShellOpenEditorForFile(filePath);
       }
     }
   }
