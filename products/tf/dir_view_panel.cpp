@@ -71,6 +71,8 @@ namespace TF
 
     Model->SetRoot(QDir("/"));
     Ui->DirView->setModel(Model);
+    connect(Model, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(OnDirModelChange()));
+    connect(Ui->DirView->selectionModel(), SIGNAL(currentChanged(const QModelIndex, const QModelIndex&)), SLOT(OnSelectionChanged(const QModelIndex&, const QModelIndex&)));
 
     KeyPressFilter* viewKeyDetector = new KeyPressFilter(this);
     viewKeyDetector->InterceptKey(Qt::Key_Tab);
@@ -89,6 +91,27 @@ namespace TF
     connect(Ui->DirView, SIGNAL(activated(const QModelIndex&)), SLOT(OnItemActivated(const QModelIndex&)));
     connect(Ui->AddressBar, SIGNAL(returnPressed()), SLOT(OnAddressBarEnter()));
     connect(Ui->SearchEdit, SIGNAL(textEdited(const QString&)), SLOT(OnQuickSearch(const QString&)));
+  }
+
+  void DirViewPanel::OnDirModelChange()
+  {
+    // adjust currently selected item
+    const QModelIndex currentIndex = Model->GetIndex(CurrentSelection);
+    if (!currentIndex.isValid())
+    {
+      Ui->DirView->selectionModel()->setCurrentIndex(Model->index(0, 0), QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
+      return;
+    }
+    Ui->DirView->selectionModel()->setCurrentIndex(currentIndex, QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
+  }
+
+  void DirViewPanel::OnSelectionChanged(const QModelIndex& current, const QModelIndex& /*previous*/)
+  {
+    if (!current.isValid())
+    {
+      return;
+    }
+    CurrentSelection = Model->GetItem(current);
   }
 
   void DirViewPanel::SetRootDir(const QDir& dir)
@@ -181,14 +204,7 @@ namespace TF
       else if (event.key() == Qt::Key_Return)
       {
         SwitchQuickSearchMode();
-
-        const QModelIndex& selection = Ui->DirView->selectionModel()->currentIndex();
-        if (!selection.isValid())
-        {
-          return;
-        }
-        const QFileInfo& selectedItem = Model->GetItem(selection);
-        HandleItemSelection(selectedItem);
+        HandleItemSelection(CurrentSelection);
       }
     }
   }
@@ -212,13 +228,7 @@ namespace TF
     {
       if (event.key() == Qt::Key_Return)
       {
-        const QModelIndex& selection = Ui->DirView->selectionModel()->currentIndex();
-        if (!selection.isValid())
-        {
-          return;
-        }
-        const QFileInfo& selectedItem = Model->GetItem(selection);
-        HandleItemSelection(selectedItem);
+        HandleItemSelection(CurrentSelection);
       }
       else if (event.key() == Qt::Key_Tab)
       {
@@ -227,25 +237,16 @@ namespace TF
       }
       else if (event.key() == Qt::Key_F4)
       {
-        const QModelIndex& selection = Ui->DirView->selectionModel()->currentIndex();
-        QFileInfo file = Model->GetItem(selection);
-        qDebug() << "Request to edit file detected:" << file.absoluteFilePath();
+        qDebug() << "Request to edit file detected:" << CurrentSelection.absoluteFilePath();
         QStringList args;
-        args << "-a" << "Sublime Text 2" << file.absoluteFilePath();
+        args << "-a" << "Sublime Text 2" << CurrentSelection.absoluteFilePath();
         qDebug() << args;
         QProcess::startDetached("open", args);
       }
       else if (event.key() == Qt::Key_Delete) // Fn + Backspace
       {
-        const QModelIndex& selection = Ui->DirView->selectionModel()->currentIndex();
-        if (!selection.isValid())
-        {
-          return;
-        }
-        const QFileInfo& selectedItem = Model->GetItem(selection);
-        qDebug() << "Delete request, path is" << selectedItem.absoluteFilePath();
-
-        Filesys::RemoveDirRecursive(Filesys::Dir(selectedItem.absoluteFilePath().toStdWString()));
+        qDebug() << "Delete request, path is" << CurrentSelection.absoluteFilePath();
+        Filesys::RemoveDirRecursive(Filesys::Dir(CurrentSelection.absoluteFilePath().toStdWString()));
       }
       else if (event.key() == Qt::Key_F7)
       {

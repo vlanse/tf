@@ -36,16 +36,22 @@ namespace TF
     void OnKeyPressed(QKeyEvent event);
     void OnQuickSearch(const QString&);
     void OnFocusEvent(QFocusEvent event);
+    void OnDirModelChange();
+    void OnSelectionChanged(const QModelIndex& current, const QModelIndex& previous);
   private:
     void HandleItemSelection(const QFileInfo& item);
     void HandleDirSelection(const QDir& dir);
     void QuickSearchHandler(QKeyEvent event);
     void SwitchQuickSearchMode();
 
+    void UpdateCurrentSelection();
+
     Ui_DirViewPanel* Ui;
 
     DirModel* Model;
     QuickSearchKeyEventHandler* QuickSearchHandlerDelegate;
     bool QuickSearchMode;
+
+    QFileInfo CurrentSelection;
   };
 } // namespace TF

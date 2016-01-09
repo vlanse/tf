@@ -98,10 +98,10 @@ namespace TF
 
   void DirModel::OnDirectoryChanged()
   {
-    beginResetModel();
     qDebug() << "Directory change notification " << RootDir.absolutePath();
     RootDir.refresh();
-    endResetModel();
+    emit dataChanged(QModelIndex(), QModelIndex());
+    emit layoutChanged();
   }
 
   QDir DirModel::GetRoot() const
