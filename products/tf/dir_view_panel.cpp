@@ -120,11 +120,9 @@ namespace TF
     if (!currentIndex.isValid())
     {
       currentIndex = Model->index(0, 0);
-      qDebug() << "!!!" << Model->rowCount() << CurrentRow;
       if (Model->rowCount() >= CurrentRow)
       {
         currentIndex = Model->index(CurrentRow - 1, 0);
-        qDebug() << "!!@@###" << currentIndex.row();
       }
     }
     Ui->DirView->selectionModel()->setCurrentIndex(currentIndex, QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
@@ -283,6 +281,14 @@ namespace TF
         newDirPath += dlg->GetDirName();
         qDebug() << "Request to create directory, path is" << newDirPath;
         Filesys::CreateDir(newDirPath.toStdWString());
+      }
+      else if (event.key() == Qt::Key_F5)
+      {
+        qDebug() << "Request to copy file or dir" << CurrentSelection.absoluteFilePath();
+        Filesys::Copy(
+          Filesys::FileInfo(CurrentSelection.absoluteFilePath().toStdWString()),
+          Filesys::FileInfo(L"/Users/vsemenov/test/zzzz/")
+        );
       }
     }
     else if (event.modifiers() == Qt::ShiftModifier)

@@ -4,9 +4,9 @@
 
 namespace Common
 {
-  std::vector<std::string> SplitString(const std::string &s, char delim)
+  StringList SplitString(const std::string &s, char delim)
   {
-    std::vector<std::string> elems;
+    StringList elems;
     std::stringstream ss(s);
     std::string item;
     while (std::getline(ss, item, delim))
@@ -31,4 +31,16 @@ namespace Common
 
     return converterX.from_bytes(str);
   }
-}
+
+  std::vector<char> StringToCStr(const std::string& s)
+  {
+    std::vector<char> buffer(s.size() + 1, 0);
+    std::copy(s.begin(), s.end(), buffer.begin());
+    return buffer;
+  }
+
+  std::vector<char> WideStringToCStr(const std::wstring& s)
+  {
+    return StringToCStr(WideStringToString(s));
+  }
+} // namespace Common

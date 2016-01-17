@@ -27,5 +27,6 @@ HEADERS += \
   $${INCLUDEDIR}/filesystem.h
 
 SOURCES += \
+  $${SRC_PATH}/filesystem/osx/copy_file.cpp \
   $${SRC_PATH}/filesystem/osx/dir.cpp \
   $${SRC_PATH}/filesystem/osx/file_info.cpp \

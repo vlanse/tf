@@ -36,4 +36,6 @@ namespace Filesys
   Common::Error RemoveDirRecursive(const Dir& dir, ProgressCallback progress = ProgressCallback());
 
   Common::Error CreateDir(const std::wstring& path);
+
+  Common::Error Copy(const FileInfo& source, const FileInfo& destination);
 } // namespace Platform

@@ -19,18 +19,10 @@ namespace Filesys
 {
   namespace
   {
-    std::vector<char> StringToCStr(const std::wstring& s)
-    {
-      const std::string& path = Common::WideStringToString(s);
-      std::vector<char> buffer(path.size() + 1, 0);
-      std::copy(path.begin(), path.end(), buffer.begin());
-      return buffer;
-    }
-
     typedef std::function<void(FTSENT*)> TraverseCallbackFunction;
     Common::Error TraverseDirectoryTree(const Dir& dir, TraverseCallbackFunction traverseCallback)
     {
-      std::vector<char> buffer = StringToCStr(dir.GetPath());
+      std::vector<char> buffer = Common::WideStringToCStr(dir.GetPath());
       int ret = 0;
 
       FTS* ftsp = NULL;
@@ -156,4 +148,4 @@ namespace Filesys
     mkdir(Common::WideStringToString(path).c_str(), 0755);
     return Common::Success;
   }
-}
+} // namespace Filesys
