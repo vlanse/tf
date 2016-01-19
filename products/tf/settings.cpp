@@ -35,6 +35,8 @@ namespace TF
 
       const char KEY_DIR_FILTERS[] = "dir_filters";
       const QDir::Filters DEFAULT_DIR_FILTERS = QDir::AllEntries | QDir::System | QDir::Hidden | QDir::NoDot;
+
+      const char VIEW_HEADER_STATE[] = "view_header_state";
     } // namespace
 
     void SaveMainWindowGeometry(const QByteArray& geometry)
@@ -59,6 +61,16 @@ namespace TF
           KEY_DIR_FILTERS,
           static_cast<int>(DEFAULT_DIR_FILTERS)).toInt()
       );
+    }
+
+    void SaveViewHeaderState(const QByteArray& state)
+    {
+      SaveValue(VIEW_HEADER_STATE, state);
+    }
+
+    QByteArray LoadViewHeaderState()
+    {
+      return LoadValue(VIEW_HEADER_STATE).toByteArray();
     }
 
     SettingsModel::SettingsModel(QObject* parent)

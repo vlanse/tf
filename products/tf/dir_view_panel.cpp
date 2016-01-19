@@ -12,6 +12,7 @@
 #include "dir_model.h"
 #include "edit_file.h"
 #include "event_filters.h"
+#include "settings.h"
 
 #include <common/filesystem.h>
 
@@ -94,6 +95,9 @@ namespace TF
     connect(Model, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(OnDirModelChange()));
     connect(Ui->DirView->selectionModel(), SIGNAL(currentChanged(const QModelIndex, const QModelIndex&)), SLOT(OnSelectionChanged(const QModelIndex&, const QModelIndex&)));
 
+    connect(Ui->DirView->horizontalHeader(), SIGNAL(sectionResized(int, int, int)), SLOT(OnHeaderGeometryChanged()));
+    Ui->DirView->horizontalHeader()->restoreState(Settings::LoadViewHeaderState());
+
     KeyPressFilter* viewKeyDetector = new KeyPressFilter(this);
     viewKeyDetector->InterceptKey(Qt::Key_Tab);
     connect(viewKeyDetector, SIGNAL(KeyPressed(QKeyEvent)), SLOT(OnKeyPressed(QKeyEvent)));
@@ -111,6 +115,13 @@ namespace TF
     connect(Ui->DirView, SIGNAL(activated(const QModelIndex&)), SLOT(OnItemActivated(const QModelIndex&)));
     connect(Ui->AddressBar, SIGNAL(returnPressed()), SLOT(OnAddressBarEnter()));
     connect(Ui->SearchEdit, SIGNAL(textEdited(const QString&)), SLOT(OnQuickSearch(const QString&)));
+  }
+
+  void DirViewPanel::OnHeaderGeometryChanged()
+  {
+    qDebug() << "Save view header state";
+    const QByteArray& state = Ui->DirView->horizontalHeader()->saveState();
+    Settings::SaveViewHeaderState(state);
   }
 
   void DirViewPanel::OnDirModelChange()

@@ -44,5 +44,8 @@ namespace TF
 
     void SaveDirFilters(QDir::Filters filters);
     QDir::Filters LoadDirFilters();
+
+    void SaveViewHeaderState(const QByteArray& state);
+    QByteArray LoadViewHeaderState();
   } // namespace Settings
 } // namespace TF

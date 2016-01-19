@@ -31,6 +31,7 @@ namespace TF
     void DirChanged();
     void ChangeSideRequest();
   private slots:
+    void OnHeaderGeometryChanged();
     void OnItemActivated(const QModelIndex& index);
     void OnAddressBarEnter();
     void OnKeyPressed(QKeyEvent event);
