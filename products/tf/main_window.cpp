@@ -20,42 +20,15 @@
 
 namespace TF
 {
-  namespace
-  {
-    void InitTabManager(TabManager*& tabs, QTabWidget* container, QObject* parent)
-    {
-      tabs = new TabManager(container, parent);
-
-      DirViewPanel* tab = new DirViewPanel();
-
-      // TODO: restore tabs from settings
-      tab->SetRootDir(QDir("/Users/vsemenov/test"));
-
-      tabs->AddTab(tab);
-      QObject::connect(tabs, SIGNAL(ChangeSideRequest()), parent, SLOT(OnChangeSideRequest()));
-
-      tab->SetFocusOnView();
-    }
-  } // namespace
-
   MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
   {
     Ui = new Ui_MainWindow();
     Ui->setupUi(this);
-
-    InitTabManager(RightTabs, Ui->RightTabs, this);
-    InitTabManager(LeftTabs, Ui->LeftTabs, this);
-    ActiveTabs = LeftTabs;
-
+    Tabs = new TabManager(Ui->LeftTabs, Ui->RightTabs, this);
     connect(Ui->ActionPreferences, SIGNAL(triggered()), SLOT(ShowSettings()));
-    restoreGeometry(Settings::LoadMainWindowGeometry());
-  }
 
-  void MainWindow::OnChangeSideRequest()
-  {
-    ActiveTabs = ActiveTabs == LeftTabs ? RightTabs : LeftTabs;
-    ActiveTabs->SetFocusOnView();
+    restoreGeometry(Settings::LoadMainWindowGeometry());
   }
 
   void MainWindow::ShowSettings()

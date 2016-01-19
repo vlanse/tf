@@ -15,52 +15,118 @@ namespace TF
   namespace
   {
     const char ROOT_DIR_NAME[] = "/";
+
+    int AddTab(TabManager* tabs, DirViewPanel* tab, SideContext& side)
+    {
+      QObject::connect(tab, SIGNAL(DirChanged()), tabs, SLOT(OnDirChange()));
+      const int tabIndex = side.Container->insertTab(0, tab, QIcon(), tab->GetRootDir().dirName());;
+      side.Container->setCurrentIndex(tabIndex);
+
+      QObject::connect(tab, SIGNAL(DirChanged()), tabs, SLOT(OnDirChange()));
+      QObject::connect(tab, SIGNAL(ChangeSideRequest()), tabs, SLOT(OnChangeSideRequest()));
+
+      side.TabsIndex[tab] = tabIndex;
+      side.ReverseTabsIndex[tabIndex] = tab;
+      side.ActiveTabIndex = tabIndex;
+
+      return tabIndex;
+    }
   } // namespace
 
-  TabManager::TabManager(QTabWidget* container, QObject* parent)
+  TabManager::TabManager(QTabWidget* leftContainer, QTabWidget* rightContainer, QObject* parent)
     : QObject(parent)
-    , Container(container)
-    , ActiveTabIndex(-1)
   {
+    LeftSide.Active = true;
+    LeftSide.Container = leftContainer;
+    RightSide.Container = rightContainer;
+
+    RestoreContext();
   }
 
-  void TabManager::AddTab(DirViewPanel* tab)
+  void TabManager::RestoreContext()
   {
-    connect(tab, SIGNAL(DirChanged()), SLOT(OnDirChange()));
-    const int tabIndex = Container->insertTab(0, tab, QIcon(), tab->GetRootDir().dirName());;
+    // TODO: restore tabs from settings
 
-    TabsIndex[tab] = tabIndex;
-    ReverseTabsIndex[tabIndex] = tab;
-    Container->setCurrentIndex(tabIndex);
-    ActiveTabIndex = tabIndex;
+    DirViewPanel* tab = new DirViewPanel();
+    tab->SetRootDir(QDir("/Users/vsemenov/test"));
+    AddTabToTheLeft(tab);
+    tab->SetFocusOnView();
 
-    connect(tab, SIGNAL(DirChanged()), SLOT(OnDirChange()));
-    connect(tab, SIGNAL(ChangeSideRequest()), SIGNAL(ChangeSideRequest()));
+    tab = new DirViewPanel();
+    tab->SetRootDir(QDir("/Users/vsemenov/test"));
+    AddTabToTheRight(tab);
+  }
+
+  void TabManager::OnChangeSideRequest()
+  {
+    LeftSide.Active = !LeftSide.Active;
+    RightSide.Active = !RightSide.Active;
+
+    SetFocusOnView();
+  }
+
+  void TabManager::AddTabToTheLeft(DirViewPanel* tab)
+  {
+    AddTab(this, tab, LeftSide);
+  }
+
+  void TabManager::AddTabToTheRight(DirViewPanel* tab)
+  {
+    AddTab(this, tab, RightSide);
   }
 
   void TabManager::CloseTab(DirViewPanel* tab)
   {
   }
 
+  SideContext* TabManager::GetActiveSide()
+  {
+    if (LeftSide.Active)
+    {
+      return &LeftSide;
+    }
+    if (RightSide.Active)
+    {
+      return &RightSide;
+    }
+    return 0;
+  }
+
+  SideContext* TabManager::FindSideForTab(DirViewPanel* tab)
+  {
+    if (LeftSide.TabsIndex.contains(tab))
+    {
+      return &LeftSide;
+    }
+    if (RightSide.TabsIndex.contains(tab))
+    {
+      return &RightSide;
+    }
+    return 0;
+  }
+
   void TabManager::SetFocusOnView()
   {
-    if (ActiveTabIndex == -1)
+    SideContext* side = GetActiveSide();
+    if (!side)
     {
-      qDebug("Invalid tab index in tab manager");
+      qWarning("Where is no active side");
       return;
     }
-    Container->setCurrentIndex(ActiveTabIndex);
-    ReverseTabsIndex[ActiveTabIndex]->SetFocusOnView();
+    side->Container->setCurrentIndex(side->ActiveTabIndex);
+    side->ReverseTabsIndex[side->ActiveTabIndex]->SetFocusOnView();
   }
 
   void TabManager::OnDirChange()
   {
     DirViewPanel* tab = qobject_cast<DirViewPanel*>(sender());
-    if (!tab || !TabsIndex.contains(tab))
+    if (!tab)
     {
       return;
     }
+    SideContext* side = FindSideForTab(tab);
+
     const QDir& tabDir = tab->GetRootDir();
-    Container->setTabText(TabsIndex[tab], tabDir.isRoot() ? ROOT_DIR_NAME : tabDir.dirName());
+    side->Container->setTabText(side->TabsIndex[tab], tabDir.isRoot() ? ROOT_DIR_NAME : tabDir.dirName());
   }
 } // namespace TF

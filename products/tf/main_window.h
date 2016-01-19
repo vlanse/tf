@@ -22,14 +22,11 @@ namespace TF
   public:
     MainWindow(QWidget* parent = 0);
   private slots:
-    void OnChangeSideRequest();
     void ShowSettings();
   protected:
     virtual void closeEvent(QCloseEvent* event);
   private:
     Ui_MainWindow* Ui;
-    TabManager* LeftTabs;
-    TabManager* RightTabs;
-    TabManager* ActiveTabs;
+    TabManager* Tabs;
   };
 } // namespace TF

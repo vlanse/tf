@@ -14,22 +14,41 @@ namespace TF
 {
   class DirViewPanel;
 
+  struct SideContext
+  {
+    SideContext()
+      : ActiveTabIndex(-1)
+      , Active(false)
+      , Container(0)
+    {}
+
+    QHash<DirViewPanel*, int> TabsIndex;
+    QHash<int, DirViewPanel*> ReverseTabsIndex;
+    int ActiveTabIndex;
+    bool Active;
+    QTabWidget* Container;
+  };
+
   class TabManager: public QObject
   {
     Q_OBJECT
   public:
-    TabManager(QTabWidget* container, QObject* parent);
-    void AddTab(DirViewPanel* tab);
+    TabManager(QTabWidget* leftContainer, QTabWidget* rightContainer, QObject* parent);
+    void AddTabToTheLeft(DirViewPanel* tab);
+    void AddTabToTheRight(DirViewPanel* tab);
     void CloseTab(DirViewPanel* tab);
     void SetFocusOnView();
   private slots:
     void OnDirChange();
+    void OnChangeSideRequest();
   signals:
     void ChangeSideRequest();
   private:
-    QTabWidget* Container;
-    QHash<DirViewPanel*, int> TabsIndex;
-    QHash<int, DirViewPanel*> ReverseTabsIndex;
-    int ActiveTabIndex;
+    void RestoreContext();
+    SideContext* GetActiveSide();
+    SideContext* FindSideForTab(DirViewPanel* tab);
+
+    SideContext LeftSide;
+    SideContext RightSide;
   };
 } // namespace TF
