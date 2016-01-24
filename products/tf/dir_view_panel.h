@@ -30,6 +30,8 @@ namespace TF
   signals:
     void DirChanged();
     void ChangeSideRequest();
+    void AddNewTabRequest();
+    void CloseTabRequest();
   private slots:
     void OnHeaderGeometryChanged();
     void OnItemActivated(const QModelIndex& index);

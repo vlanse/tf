@@ -37,6 +37,8 @@ namespace TF
       const QDir::Filters DEFAULT_DIR_FILTERS = QDir::AllEntries | QDir::System | QDir::Hidden | QDir::NoDot;
 
       const char VIEW_HEADER_STATE[] = "view_header_state";
+
+      const char TABS_STATE[] = "tabs_state";
     } // namespace
 
     void SaveMainWindowGeometry(const QByteArray& geometry)
@@ -71,6 +73,16 @@ namespace TF
     QByteArray LoadViewHeaderState()
     {
       return LoadValue(VIEW_HEADER_STATE).toByteArray();
+    }
+
+    void SaveTabs(const QJsonDocument& data)
+    {
+      SaveValue(TABS_STATE, data.toBinaryData());
+    }
+
+    QJsonDocument LoadTabs()
+    {
+      return QJsonDocument::fromBinaryData(LoadValue(TABS_STATE).toByteArray());
     }
 
     SettingsModel::SettingsModel(QObject* parent)

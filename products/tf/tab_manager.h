@@ -17,14 +17,10 @@ namespace TF
   struct SideContext
   {
     SideContext()
-      : ActiveTabIndex(-1)
-      , Active(false)
+      : Active(false)
       , Container(0)
     {}
 
-    QHash<DirViewPanel*, int> TabsIndex;
-    QHash<int, DirViewPanel*> ReverseTabsIndex;
-    int ActiveTabIndex;
     bool Active;
     QTabWidget* Container;
   };
@@ -36,15 +32,16 @@ namespace TF
     TabManager(QTabWidget* leftContainer, QTabWidget* rightContainer, QObject* parent);
     void AddTabToTheLeft(DirViewPanel* tab);
     void AddTabToTheRight(DirViewPanel* tab);
-    void CloseTab(DirViewPanel* tab);
     void SetFocusOnView();
   private slots:
     void OnDirChange();
     void OnChangeSideRequest();
-  signals:
-    void ChangeSideRequest();
+    void OnAddNewTabRequest();
+    void OnCloseTabRequest();
   private:
     void RestoreContext();
+    void SaveContext();
+
     SideContext* GetActiveSide();
     SideContext* FindSideForTab(DirViewPanel* tab);
 

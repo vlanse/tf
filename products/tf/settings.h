@@ -10,6 +10,7 @@
 #include <QAbstractTableModel>
 #include <QByteArray>
 #include <QDir>
+#include <QJsonDocument>
 
 namespace TF
 {
@@ -47,5 +48,8 @@ namespace TF
 
     void SaveViewHeaderState(const QByteArray& state);
     QByteArray LoadViewHeaderState();
+
+    void SaveTabs(const QJsonDocument& data);
+    QJsonDocument LoadTabs();
   } // namespace Settings
 } // namespace TF

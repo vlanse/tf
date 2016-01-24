@@ -316,6 +316,19 @@ namespace TF
         ShellOpenEditorForFile(filePath);
       }
     }
+    else if (event.modifiers() == Qt::ControlModifier)
+    {
+      if (event.key() == Qt::Key_T)
+      {
+        qDebug() << "New tab request";
+        emit AddNewTabRequest();
+      }
+      else if (event.key() == Qt::Key_W)
+      {
+        qDebug() << "Close tab request";
+        emit CloseTabRequest();
+      }
+    }
   }
 
   void DirViewPanel::HandleItemSelection(const QFileInfo& item)

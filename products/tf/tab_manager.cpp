@@ -7,8 +7,14 @@
 #include "tab_manager.h"
 
 #include "dir_view_panel.h"
+#include "settings.h"
 
+#include <QPushButton>
 #include <QDebug>
+
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
 
 namespace TF
 {
@@ -16,20 +22,62 @@ namespace TF
   {
     const char ROOT_DIR_NAME[] = "/";
 
-    int AddTab(TabManager* tabs, DirViewPanel* tab, SideContext& side)
+    int AddTab(TabManager* tabs, DirViewPanel* tab, SideContext& side, int index = -1)
     {
       QObject::connect(tab, SIGNAL(DirChanged()), tabs, SLOT(OnDirChange()));
-      const int tabIndex = side.Container->insertTab(0, tab, QIcon(), tab->GetRootDir().dirName());;
+
+      const QString& tabName = tab->GetRootDir().isRoot() ? ROOT_DIR_NAME : tab->GetRootDir().dirName();
+      const int tabIndex = side.Container->insertTab(index, tab, QIcon(), tabName);
       side.Container->setCurrentIndex(tabIndex);
 
       QObject::connect(tab, SIGNAL(DirChanged()), tabs, SLOT(OnDirChange()));
       QObject::connect(tab, SIGNAL(ChangeSideRequest()), tabs, SLOT(OnChangeSideRequest()));
-
-      side.TabsIndex[tab] = tabIndex;
-      side.ReverseTabsIndex[tabIndex] = tab;
-      side.ActiveTabIndex = tabIndex;
+      QObject::connect(tab, SIGNAL(AddNewTabRequest()), tabs, SLOT(OnAddNewTabRequest()));
+      QObject::connect(tab, SIGNAL(CloseTabRequest()), tabs, SLOT(OnCloseTabRequest()));
 
       return tabIndex;
+    }
+
+    void RestoreTabs(const QJsonValue& tabsData, TabManager* tabs, SideContext& side)
+    {
+      QJsonArray tabsArray;
+      if (!tabsData.isArray())
+      {
+        QJsonObject obj;
+        obj["root"] = ROOT_DIR_NAME;
+        tabsArray.append(obj);
+      }
+      else
+      {
+        tabsArray = tabsData.toArray();
+      }
+
+      foreach(const QJsonValue val, tabsArray)
+      {
+        if (!val.isObject())
+        {
+          continue;
+        }
+        const QJsonObject tab = val.toObject();
+
+        DirViewPanel* tabPanel = new DirViewPanel();
+        tabPanel->SetRootDir(QDir(tab["root"].toString(ROOT_DIR_NAME)));
+        AddTab(tabs, tabPanel, side);
+        tabPanel->SetFocusOnView();
+      }
+    }
+
+    QJsonArray SaveTabs(const SideContext& side)
+    {
+      QJsonArray result;
+      for (int i = 0; i < side.Container->count(); ++i)
+      {
+        DirViewPanel* tab = qobject_cast<DirViewPanel*>(side.Container->widget(i));
+        QJsonObject obj;
+        obj["root"] = tab->GetRootDir().path();
+        result.append(obj);
+      }
+      return result;
     }
   } // namespace
 
@@ -45,16 +93,17 @@ namespace TF
 
   void TabManager::RestoreContext()
   {
-    // TODO: restore tabs from settings
+    const QJsonDocument data = Settings::LoadTabs();
+    RestoreTabs(data.object().value("left"), this, LeftSide);
+    RestoreTabs(data.object().value("right"), this, RightSide);
+  }
 
-    DirViewPanel* tab = new DirViewPanel();
-    tab->SetRootDir(QDir("/Users/vsemenov/test"));
-    AddTabToTheLeft(tab);
-    tab->SetFocusOnView();
-
-    tab = new DirViewPanel();
-    tab->SetRootDir(QDir("/Users/vsemenov/test"));
-    AddTabToTheRight(tab);
+  void TabManager::SaveContext()
+  {
+    QJsonObject obj;
+    obj["left"] = SaveTabs(LeftSide);
+    obj["right"] = SaveTabs(RightSide);
+    Settings::SaveTabs(QJsonDocument(obj));
   }
 
   void TabManager::OnChangeSideRequest()
@@ -65,18 +114,55 @@ namespace TF
     SetFocusOnView();
   }
 
+  void TabManager::OnAddNewTabRequest()
+  {
+    SideContext* side = GetActiveSide();
+    DirViewPanel* tab = new DirViewPanel();
+
+    const DirViewPanel* currentTab = qobject_cast<const DirViewPanel*>(side->Container->currentWidget());
+
+    tab->SetRootDir(currentTab->GetRootDir());
+    AddTab(this, tab, *side, side->Container->currentIndex() + 1);
+    tab->SetFocusOnView();
+
+    SaveContext();
+  }
+
+  void TabManager::OnCloseTabRequest()
+  {
+    SideContext* side = GetActiveSide();
+    if (!side || side->Container->count() == 1)
+    {
+      return;
+    }
+
+    const int indexToRemove = side->Container->currentIndex();
+    DirViewPanel* tab = qobject_cast<DirViewPanel*>(side->Container->widget(indexToRemove));
+    side->Container->removeTab(indexToRemove);
+    tab->deleteLater();
+
+    const int currentIndex = side->Container->currentIndex();
+    if (currentIndex != -1)
+    {
+      DirViewPanel* tab = qobject_cast<DirViewPanel*>(side->Container->widget(currentIndex));
+      tab->SetFocusOnView();
+    }
+
+    SaveContext();
+  }
+
   void TabManager::AddTabToTheLeft(DirViewPanel* tab)
   {
     AddTab(this, tab, LeftSide);
+
+    SaveContext();
   }
 
   void TabManager::AddTabToTheRight(DirViewPanel* tab)
   {
     AddTab(this, tab, RightSide);
-  }
 
-  void TabManager::CloseTab(DirViewPanel* tab)
-  {
+    SaveContext();
   }
 
   SideContext* TabManager::GetActiveSide()
@@ -94,11 +180,11 @@ namespace TF
 
   SideContext* TabManager::FindSideForTab(DirViewPanel* tab)
   {
-    if (LeftSide.TabsIndex.contains(tab))
+    if (LeftSide.Container->indexOf(tab) != -1)
     {
       return &LeftSide;
     }
-    if (RightSide.TabsIndex.contains(tab))
+    if (RightSide.Container->indexOf(tab) != -1)
     {
       return &RightSide;
     }
@@ -113,8 +199,9 @@ namespace TF
       qWarning("Where is no active side");
       return;
     }
-    side->Container->setCurrentIndex(side->ActiveTabIndex);
-    side->ReverseTabsIndex[side->ActiveTabIndex]->SetFocusOnView();
+
+    DirViewPanel* tab = qobject_cast<DirViewPanel*>(side->Container->currentWidget());
+    tab->SetFocusOnView();
   }
 
   void TabManager::OnDirChange()
@@ -125,8 +212,12 @@ namespace TF
       return;
     }
     SideContext* side = FindSideForTab(tab);
+    const int tabIndex = side->Container->indexOf(tab);
 
     const QDir& tabDir = tab->GetRootDir();
-    side->Container->setTabText(side->TabsIndex[tab], tabDir.isRoot() ? ROOT_DIR_NAME : tabDir.dirName());
+    side->Container->setTabText(tabIndex, tabDir.isRoot() ? ROOT_DIR_NAME : tabDir.dirName());
+    side->Container->setTabToolTip(tabIndex, tabDir.path());
+
+    SaveContext();
   }
 } // namespace TF
