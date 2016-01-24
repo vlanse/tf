@@ -29,7 +29,7 @@ namespace TF
     void SetFocusOnView();
   signals:
     void DirChanged();
-    void ChangeSideRequest();
+    void ChangeSideRequest(bool force);
     void AddNewTabRequest();
     void CloseTabRequest();
   private slots:

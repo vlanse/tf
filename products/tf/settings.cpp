@@ -18,7 +18,7 @@ namespace TF
       const char COMPANY_NAME[] = "TF Inc";
       const char PRODUCT_NAME[] = "TF";
 
-      void SaveValue(const char* key, const QVariant& value)
+      void SaveValue(const char* key, const QVariant& value, bool notifyChange = true)
       {
         QSettings settings(COMPANY_NAME, PRODUCT_NAME);
         settings.setValue(key, value);
@@ -67,7 +67,7 @@ namespace TF
 
     void SaveViewHeaderState(const QByteArray& state)
     {
-      SaveValue(VIEW_HEADER_STATE, state);
+      SaveValue(VIEW_HEADER_STATE, state, false);
     }
 
     QByteArray LoadViewHeaderState()
@@ -77,7 +77,7 @@ namespace TF
 
     void SaveTabs(const QJsonDocument& data)
     {
-      SaveValue(TABS_STATE, data.toBinaryData());
+      SaveValue(TABS_STATE, data.toBinaryData(), false);
     }
 
     QJsonDocument LoadTabs()

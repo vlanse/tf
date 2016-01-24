@@ -177,9 +177,13 @@ namespace TF
 
   void DirViewPanel::OnFocusEvent(QFocusEvent event)
   {
-    if (QuickSearchMode && event.gotFocus())
+    if (event.gotFocus())
     {
-      SwitchQuickSearchMode();
+      if (QuickSearchMode)
+      {
+        SwitchQuickSearchMode();
+      }
+      emit ChangeSideRequest(false);
     }
   }
 
@@ -271,7 +275,7 @@ namespace TF
       else if (event.key() == Qt::Key_Tab)
       {
         qDebug("Request to change side detected");
-        emit ChangeSideRequest();
+        emit ChangeSideRequest(true);
       }
       else if (event.key() == Qt::Key_F4)
       {
@@ -351,6 +355,8 @@ namespace TF
 
     const QModelIndex& index = Model->GetIndex(previousDir);
     Ui->DirView->setCurrentIndex(index.isValid() ? index : Model->index(0,0));
+    qDebug() << "!!!" << Ui->DirView->currentIndex().row();
+
     Ui->DirView->scrollTo(Ui->DirView->selectionModel()->currentIndex());
 
     emit DirChanged();

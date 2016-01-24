@@ -30,17 +30,15 @@ namespace TF
     Q_OBJECT
   public:
     TabManager(QTabWidget* leftContainer, QTabWidget* rightContainer, QObject* parent);
-    void AddTabToTheLeft(DirViewPanel* tab);
-    void AddTabToTheRight(DirViewPanel* tab);
-    void SetFocusOnView();
   private slots:
     void OnDirChange();
-    void OnChangeSideRequest();
+    void OnChangeSideRequest(bool force);
     void OnAddNewTabRequest();
     void OnCloseTabRequest();
   private:
     void RestoreContext();
     void SaveContext();
+    void SetFocusOnView();
 
     SideContext* GetActiveSide();
     SideContext* FindSideForTab(DirViewPanel* tab);
