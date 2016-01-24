@@ -22,7 +22,10 @@ namespace TF
       {
         QSettings settings(COMPANY_NAME, PRODUCT_NAME);
         settings.setValue(key, value);
-        SettingsChangeMonitor::Instance().NotifySettingsChanged();
+        if (notifyChange)
+        {
+          SettingsChangeMonitor::Instance().NotifySettingsChanged();
+        }
       }
 
       QVariant LoadValue(const char* key, const QVariant& defaultVal = QVariant())
