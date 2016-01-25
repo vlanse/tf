@@ -63,6 +63,18 @@ namespace TF
 
       return result;
     }
+
+    QString FormatSize(quint64 size)
+    {
+      QString result = QString::number(size);
+      int len = result.size();
+      while (len > 3)
+      {
+        result.insert(len - 3, '.');
+        len -= 3;
+      }
+      return result;
+    }
   } // namespace
 
   DirModel::DirModel(QObject* parent)
@@ -165,7 +177,7 @@ namespace TF
         case COL_EXT:
           return GetNameAndExtension(currentItem).second;
         case COL_SIZE:
-          return currentItem.isDir() ? "[DIR]" : QString::number(currentItem.size());
+          return currentItem.isDir() ? "[DIR]" : FormatSize(currentItem.size());
         case COL_MTIME:
           return currentItem.lastModified();
         case COL_PERMISSIONS:
@@ -177,6 +189,15 @@ namespace TF
     {
       QFileIconProvider icons;
       return icons.icon(currentItem);
+    }
+    if (role == Qt::TextAlignmentRole)
+    {
+      switch (index.column())
+      {
+        case COL_SIZE:
+          return currentItem.isDir() ? Qt::AlignLeft : Qt::AlignRight;
+      }
+      return QVariant();
     }
     return QVariant();
   }
