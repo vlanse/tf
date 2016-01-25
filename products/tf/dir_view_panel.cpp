@@ -238,7 +238,7 @@ namespace TF
 
     if (QuickSearchMode)
     {
-      if (event.key() == Qt::Key_Up || event.key() == Qt::Key_Down)
+      if (event.key() == Qt::Key_Up || event.key() == Qt::Key_Down || event.key() == Qt::Key_F4)
       {
         SwitchQuickSearchMode();
         PostKeyEvent(Ui->DirView, event);
