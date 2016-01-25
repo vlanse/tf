@@ -52,6 +52,14 @@ namespace TF
         f.close();
       }
     }
+
+    void ShellOpenTerminal(const QString& path)
+    {
+      QStringList args;
+      args << "-a" << "iterm" << path;
+      qDebug() << "Open terminal for path" << path;
+      QProcess::startDetached("open", args);
+    }
   } // namespace
 
   class QuickSearchKeyEventHandler: public QObject
@@ -333,6 +341,14 @@ namespace TF
         emit CloseTabRequest();
       }
     }
+    else if (event.modifiers() == Qt::MetaModifier)
+    {
+      if (event.key() == Qt::Key_C)
+      {
+        qDebug() << "Open terminal request";
+        ShellOpenTerminal(Model->GetRoot().absolutePath());
+      }
+    }
   }
 
   void DirViewPanel::HandleItemSelection(const QFileInfo& item)
@@ -355,7 +371,6 @@ namespace TF
 
     const QModelIndex& index = Model->GetIndex(previousDir);
     Ui->DirView->setCurrentIndex(index.isValid() ? index : Model->index(0,0));
-    qDebug() << "!!!" << Ui->DirView->currentIndex().row();
 
     Ui->DirView->scrollTo(Ui->DirView->selectionModel()->currentIndex());
 
