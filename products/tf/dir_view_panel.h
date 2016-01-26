@@ -41,6 +41,8 @@ namespace TF
     void OnFocusEvent(QFocusEvent event);
     void OnDirModelChange();
     void OnSelectionChanged(const QModelIndex& current, const QModelIndex& previous);
+    void OnShowViewContextMenu(const QPoint& point);
+    void OnRevealInFinder();
   private:
     void HandleItemSelection(const QFileInfo& item);
     void HandleDirSelection(const QDir& dir);

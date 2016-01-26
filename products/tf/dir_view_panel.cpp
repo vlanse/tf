@@ -18,6 +18,7 @@
 
 #include <QDebug>
 #include <QDesktopServices>
+#include <QMenu>
 #include <QProcess>
 #include <QUrl>
 
@@ -58,6 +59,14 @@ namespace TF
       QStringList args;
       args << "-a" << "iterm" << path;
       qDebug() << "Open terminal for path" << path;
+      QProcess::startDetached("open", args);
+    }
+
+    void ShellRevealInFinder(const QString& path)
+    {
+      QStringList args;
+      args << "-R" << path;
+      qDebug() << "Reveal path in finder" << path;
       QProcess::startDetached("open", args);
     }
   } // namespace
@@ -106,6 +115,9 @@ namespace TF
     connect(Ui->DirView->horizontalHeader(), SIGNAL(sectionResized(int, int, int)), SLOT(OnHeaderGeometryChanged()));
     Ui->DirView->horizontalHeader()->restoreState(Settings::LoadViewHeaderState());
 
+    Ui->DirView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(Ui->DirView, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(OnShowViewContextMenu(const QPoint&)));
+
     KeyPressFilter* viewKeyDetector = new KeyPressFilter(this);
     viewKeyDetector->InterceptKey(Qt::Key_Tab);
     connect(viewKeyDetector, SIGNAL(KeyPressed(QKeyEvent)), SLOT(OnKeyPressed(QKeyEvent)));
@@ -123,6 +135,20 @@ namespace TF
     connect(Ui->DirView, SIGNAL(activated(const QModelIndex&)), SLOT(OnItemActivated(const QModelIndex&)));
     connect(Ui->AddressBar, SIGNAL(returnPressed()), SLOT(OnAddressBarEnter()));
     connect(Ui->SearchEdit, SIGNAL(textEdited(const QString&)), SLOT(OnQuickSearch(const QString&)));
+  }
+
+  void DirViewPanel::OnShowViewContextMenu(const QPoint& point)
+  {
+    const QModelIndex index = Ui->DirView->indexAt(point);
+    QMenu menu;
+    QAction* action = menu.addAction("Reveal in Finder");
+    connect(action, SIGNAL(triggered(bool)), SLOT(OnRevealInFinder()));
+    menu.exec(Ui->DirView->viewport()->mapToGlobal(point));
+  }
+
+  void DirViewPanel::OnRevealInFinder()
+  {
+    ShellRevealInFinder(CurrentSelection.absoluteFilePath());
   }
 
   void DirViewPanel::OnHeaderGeometryChanged()
