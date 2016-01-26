@@ -107,6 +107,9 @@ namespace TF
     Ui->setupUi(this);
     Ui->SearchEdit->hide();
 
+    // TODO: move in settings
+    setFont(QFont("Menlo Regular", 11));
+
     Model->SetRoot(QDir("/"));
     Ui->DirView->setModel(Model);
     connect(Model, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(OnDirModelChange()));
@@ -141,14 +144,23 @@ namespace TF
   {
     const QModelIndex index = Ui->DirView->indexAt(point);
     QMenu menu;
-    QAction* action = menu.addAction("Reveal in Finder");
-    connect(action, SIGNAL(triggered(bool)), SLOT(OnRevealInFinder()));
+    QAction* revealAction = menu.addAction("Reveal in Finder");
+    connect(revealAction, SIGNAL(triggered(bool)), SLOT(OnRevealInFinder()));
+
+    QAction* openTerminalAction = menu.addAction("Open Terminal");
+    connect(openTerminalAction, SIGNAL(triggered(bool)), SLOT(OnOpenTerminal()));
+
     menu.exec(Ui->DirView->viewport()->mapToGlobal(point));
   }
 
   void DirViewPanel::OnRevealInFinder()
   {
     ShellRevealInFinder(CurrentSelection.absoluteFilePath());
+  }
+
+  void DirViewPanel::OnOpenTerminal()
+  {
+    ShellOpenTerminal(Model->GetRoot().absolutePath());
   }
 
   void DirViewPanel::OnHeaderGeometryChanged()

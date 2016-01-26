@@ -43,6 +43,7 @@ namespace TF
     void OnSelectionChanged(const QModelIndex& current, const QModelIndex& previous);
     void OnShowViewContextMenu(const QPoint& point);
     void OnRevealInFinder();
+    void OnOpenTerminal();
   private:
     void HandleItemSelection(const QFileInfo& item);
     void HandleDirSelection(const QDir& dir);
