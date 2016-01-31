@@ -20,6 +20,7 @@ FORMS += \
   ui/create_dir.ui \
   ui/dir_view_panel.ui \
   ui/edit_file.ui \
+  ui/find_in_files.ui \
   ui/main_window.ui \
   ui/settings_dialog.ui \
 
@@ -29,6 +30,7 @@ HEADERS += \
   dir_view_panel.h \
   edit_file.h \
   event_filters.h \
+  find_in_files.h \
   main_window.h \
   settings.h \
   settings_dialog.h \
@@ -40,6 +42,7 @@ SOURCES += \
   dir_view_panel.cpp \
   edit_file.cpp \
   event_filters.cpp \
+  find_in_files.cpp \
   main.cpp \
   main_window.cpp \
   settings.cpp \

@@ -12,6 +12,7 @@
 #include "dir_model.h"
 #include "edit_file.h"
 #include "event_filters.h"
+#include "find_in_files.h"
 #include "settings.h"
 
 #include <common/filesystem.h>
@@ -377,6 +378,12 @@ namespace TF
       {
         qDebug() << "Close tab request";
         emit CloseTabRequest();
+      }
+      else if (event.key() == Qt::Key_F)
+      {
+        qDebug() << "Find in files request";
+        FindInFilesDialog* dlg = new FindInFilesDialog(Filesys::Dir(CurrentSelection.absolutePath().toStdWString()), this);
+        dlg->exec();
       }
     }
     else if (event.modifiers() == Qt::MetaModifier)
