@@ -11,28 +11,18 @@
 
 namespace TF
 {
-  class FileManagerTab : QObject
-  {
-    Q_OBJECT
-  public:
-    FileManagerTab(QObject* parent) : QObject(parent) {}
-    virtual ~FileManagerTab() {}
-    virtual QFileInfo GetSelection() const = 0;
-    virtual QDir GetRootDir() const = 0;
-    virtual void SetRootDir(const QDir& dir) = 0;
-    virtual void SetFocus() = 0;
-  signals:
-    void DirChanged();
-  };
+  class DirViewPanel;
+  class TabManager;
 
   class TabContext
   {
   public:
-    virtual ~TabContext() {}
-    virtual QFileInfo GetOppositeTabSelection(FileManagerTab* currentTab) const = 0;
-    virtual void ChangeSide(FileManagerTab* currentTab) = 0;
-    virtual void AddTabToTheLeft(FileManagerTab* tab) = 0;
-    virtual void AddTabToTheRight(FileManagerTab* tab) = 0;
-    virtual void CloseTab(FileManagerTab* tab) = 0;
+    TabContext(TabManager* tabs);
+    ~TabContext() {}
+    QFileInfo GetOppositeTabSelection(DirViewPanel* currentTab) const;
+    QDir GetOppositeTabRootDir(DirViewPanel* currentTab) const;
+    void ChangeSide(bool force = false);
+  private:
+    TabManager* Tabs;
   };
 } // namespace TF

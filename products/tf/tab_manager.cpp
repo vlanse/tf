@@ -5,6 +5,7 @@
  *      Author: Vladimir Semenov (vlanse@gmail.com)
  */
 #include "tab_manager.h"
+#include "tab_context.h"
 
 #include "dir_view_panel.h"
 #include "settings.h"
@@ -22,7 +23,7 @@ namespace TF
   {
     const char ROOT_DIR_NAME[] = "/";
 
-    void AddTab(TabManager* tabs, DirViewPanel* tab, SideContext& side, int index = -1)
+    void AddTab(TabManager* tabs, DirViewPanel* tab, const SideContext& side, int index = -1)
     {
       const QString& tabName = tab->GetRootDir().isRoot() ? ROOT_DIR_NAME : tab->GetRootDir().dirName();
       const int tabIndex = side.Container->insertTab(index, tab, QIcon(), tabName);
@@ -59,7 +60,7 @@ namespace TF
         }
         const QJsonObject tab = val.toObject();
 
-        DirViewPanel* tabPanel = new DirViewPanel();
+        DirViewPanel* tabPanel = new DirViewPanel(TabContext(tabs));
         tabPanel->SetRootDir(QDir(tab["root"].toString(ROOT_DIR_NAME)));
         AddTab(tabs, tabPanel, side);
         tabPanel->SetFocusOnView();
@@ -97,6 +98,17 @@ namespace TF
     RestoreContext();
   }
 
+  DirViewPanel* TabManager::GetOppositeTab(DirViewPanel* current) const
+  {
+    const SideContext* side = FindSideForTab(current);
+    if (side == 0)
+    {
+      return 0;
+    }
+    const SideContext* oppositeSide = (side == &LeftSide ? &RightSide : &LeftSide);
+    return qobject_cast<DirViewPanel*>(oppositeSide->Container->currentWidget());
+  }
+
   void TabManager::RestoreContext()
   {
     const QJsonDocument data = Settings::LoadTabs();
@@ -128,8 +140,8 @@ namespace TF
 
   void TabManager::OnAddNewTabRequest()
   {
-    SideContext* side = GetActiveSide();
-    DirViewPanel* tab = new DirViewPanel();
+    const SideContext* side = GetActiveSide();
+    DirViewPanel* tab = new DirViewPanel(TabContext(this));
 
     const DirViewPanel* currentTab = qobject_cast<const DirViewPanel*>(side->Container->currentWidget());
 
@@ -142,7 +154,7 @@ namespace TF
 
   void TabManager::OnCloseTabRequest()
   {
-    SideContext* side = GetActiveSide();
+    const SideContext* side = GetActiveSide();
     if (!side || side->Container->count() == 1)
     {
       return;
@@ -163,7 +175,7 @@ namespace TF
     SaveContext();
   }
 
-  SideContext* TabManager::GetActiveSide()
+  const SideContext* TabManager::GetActiveSide() const
   {
     if (LeftSide.Active)
     {
@@ -176,7 +188,7 @@ namespace TF
     return 0;
   }
 
-  SideContext* TabManager::FindSideForTab(DirViewPanel* tab)
+  const SideContext* TabManager::FindSideForTab(DirViewPanel* tab) const
   {
     if (LeftSide.Container->indexOf(tab) != -1)
     {
@@ -191,7 +203,7 @@ namespace TF
 
   void TabManager::SetFocusOnView()
   {
-    SideContext* side = GetActiveSide();
+    const SideContext* side = GetActiveSide();
     if (!side)
     {
       qWarning("Where is no active side");
@@ -209,7 +221,7 @@ namespace TF
     {
       return;
     }
-    SideContext* side = FindSideForTab(tab);
+    const SideContext* side = FindSideForTab(tab);
     const int tabIndex = side->Container->indexOf(tab);
 
     const QDir& tabDir = tab->GetRootDir();

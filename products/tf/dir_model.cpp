@@ -132,11 +132,12 @@ namespace TF
 
   QModelIndex DirModel::GetIndex(const QFileInfo& file) const
   {
-    if (!IsParentDir(RootDir, file))
+    const int indexRow = RootDir.entryList().indexOf(file.fileName());
+    if (indexRow == -1 && !IsParentDir(RootDir, file))
     {
       return QModelIndex();
     }
-    return index(RootDir.entryList().indexOf(file.fileName()), 0);
+    return index(indexRow, 0);
   }
 
   QModelIndex DirModel::GetIndex(const QDir& dir) const
@@ -195,7 +196,7 @@ namespace TF
       switch (index.column())
       {
         case COL_SIZE:
-          return currentItem.isDir() ? Qt::AlignLeft : Qt::AlignRight;
+          return static_cast<int>(Qt::AlignVCenter | (currentItem.isDir() ? Qt::AlignLeft : Qt::AlignRight));
       }
       return QVariant();
     }

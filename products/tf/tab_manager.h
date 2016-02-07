@@ -30,9 +30,11 @@ namespace TF
     Q_OBJECT
   public:
     TabManager(QTabWidget* leftContainer, QTabWidget* rightContainer, QObject* parent);
+    DirViewPanel* GetOppositeTab(DirViewPanel* current) const;
+  public slots:
+    void OnChangeSideRequest(bool force);
   private slots:
     void OnDirChange();
-    void OnChangeSideRequest(bool force);
     void OnAddNewTabRequest();
     void OnCloseTabRequest();
     void SaveContext();
@@ -40,8 +42,8 @@ namespace TF
     void RestoreContext();
     void SetFocusOnView();
 
-    SideContext* GetActiveSide();
-    SideContext* FindSideForTab(DirViewPanel* tab);
+    const SideContext* GetActiveSide() const;
+    const SideContext* FindSideForTab(DirViewPanel* tab) const;
 
     SideContext LeftSide;
     SideContext RightSide;

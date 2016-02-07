@@ -97,12 +97,13 @@ namespace TF
     Handler(event);
   }
 
-  DirViewPanel::DirViewPanel(QWidget* parent)
+  DirViewPanel::DirViewPanel(const TabContext& context, QWidget* parent)
     : QWidget(parent)
     , Model(new DirModel(this))
     , QuickSearchHandlerDelegate(new QuickSearchKeyEventHandler(std::bind(&DirViewPanel::QuickSearchHandler, this, std::placeholders::_1), this))
     , QuickSearchMode(false)
     , CurrentRow(0)
+    , Context(context)
   {
     Ui = new Ui_DirViewPanel();
     Ui->setupUi(this);
@@ -141,9 +142,14 @@ namespace TF
     connect(Ui->SearchEdit, SIGNAL(textEdited(const QString&)), SLOT(OnQuickSearch(const QString&)));
   }
 
+  QFileInfo DirViewPanel::GetCurrentSelection() const
+  {
+    return CurrentSelection;
+  }
+
   void DirViewPanel::OnShowViewContextMenu(const QPoint& point)
   {
-    const QModelIndex index = Ui->DirView->indexAt(point);
+    // const QModelIndex index = Ui->DirView->indexAt(point);
     QMenu menu;
     QAction* revealAction = menu.addAction("Reveal in Finder");
     connect(revealAction, SIGNAL(triggered(bool)), SLOT(OnRevealInFinder()));
@@ -173,13 +179,15 @@ namespace TF
 
   void DirViewPanel::OnDirModelChange()
   {
-    // adjust currently selected item
+    // adjust selection after model changed
     QModelIndex currentIndex = Model->GetIndex(CurrentSelection);
+    qDebug() << currentIndex;
     if (!currentIndex.isValid())
     {
       currentIndex = Model->index(0, 0);
       if (Model->rowCount() >= CurrentRow)
       {
+        // case when item has been deleted
         currentIndex = Model->index(CurrentRow - 1, 0);
       }
     }
@@ -346,10 +354,11 @@ namespace TF
       }
       else if (event.key() == Qt::Key_F5)
       {
-        qDebug() << "Request to copy file or dir" << CurrentSelection.absoluteFilePath();
+        const QDir& dest = Context.GetOppositeTabRootDir(this);
+        qDebug() << "Request to copy file or dir" << CurrentSelection.absoluteFilePath() << "to" << dest.absolutePath();
         Filesys::Copy(
           Filesys::FileInfo(CurrentSelection.absoluteFilePath().toStdWString()),
-          Filesys::FileInfo(L"/Users/vsemenov/test/zzzz/")
+          Filesys::FileInfo(dest.absolutePath().toStdWString())
         );
       }
     }

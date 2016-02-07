@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "tab_context.h"
+
 #include <QDir>
 #include <QFocusEvent>
 #include <QKeyEvent>
@@ -18,14 +20,16 @@ namespace TF
 {
   class DirModel;
   class QuickSearchKeyEventHandler;
+  class TabContext;
 
   class DirViewPanel: public QWidget
   {
     Q_OBJECT
   public:
-    DirViewPanel(QWidget* parent = 0);
+    DirViewPanel(const TabContext& context, QWidget* parent = 0);
     void SetRootDir(const QDir& dir);
     QDir GetRootDir() const;
+    QFileInfo GetCurrentSelection() const;
     void SetFocusOnView();
   signals:
     void DirChanged();
@@ -60,5 +64,6 @@ namespace TF
 
     QFileInfo CurrentSelection;
     int CurrentRow;
+    TabContext Context;
   };
 } // namespace TF
