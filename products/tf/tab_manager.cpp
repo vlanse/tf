@@ -32,10 +32,13 @@ namespace TF
       QObject::connect(tab, SIGNAL(ChangeSideRequest(bool)), tabs, SLOT(OnChangeSideRequest(bool)));
       QObject::connect(tab, SIGNAL(AddNewTabRequest()), tabs, SLOT(OnAddNewTabRequest()));
       QObject::connect(tab, SIGNAL(CloseTabRequest()), tabs, SLOT(OnCloseTabRequest()));
+      QObject::connect(side.Container, SIGNAL(currentChanged(int)), tabs, SLOT(SaveContext()));
     }
 
-    void RestoreTabs(const QJsonValue& tabsData, TabManager* tabs, SideContext& side)
+    void RestoreTabs(const QJsonValue& tabsObject, TabManager* tabs, SideContext& side)
     {
+      QJsonValue tabsData = tabsObject.toObject()["tabs"];
+      const int activeIndex = tabsObject.toObject()["active_index"].toInt();
       QJsonArray tabsArray;
       if (!tabsData.isArray())
       {
@@ -61,18 +64,25 @@ namespace TF
         AddTab(tabs, tabPanel, side);
         tabPanel->SetFocusOnView();
       }
+
+      qDebug() << "set current index from settings" << activeIndex;
+      side.Container->setCurrentIndex(activeIndex);
     }
 
-    QJsonArray SaveTabs(const SideContext& side)
+    QJsonObject SaveTabs(const SideContext& side)
     {
-      QJsonArray result;
+      QJsonObject result;
+      QJsonArray tabs;
       for (int i = 0; i < side.Container->count(); ++i)
       {
         DirViewPanel* tab = qobject_cast<DirViewPanel*>(side.Container->widget(i));
         QJsonObject obj;
         obj["root"] = tab->GetRootDir().path();
-        result.append(obj);
+        tabs.append(obj);
       }
+      result["tabs"] = tabs;
+      result["active_index"] = side.Container->currentIndex();
+      qDebug() << "set current index to settings" << side.Container->currentIndex();
       return result;
     }
   } // namespace

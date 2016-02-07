@@ -35,9 +35,9 @@ namespace TF
     void OnChangeSideRequest(bool force);
     void OnAddNewTabRequest();
     void OnCloseTabRequest();
+    void SaveContext();
   private:
     void RestoreContext();
-    void SaveContext();
     void SetFocusOnView();
 
     SideContext* GetActiveSide();
