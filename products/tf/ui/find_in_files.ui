@@ -73,7 +73,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QListView" name="ResultView"/>
+       <widget class="QListWidget" name="ResultView">
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

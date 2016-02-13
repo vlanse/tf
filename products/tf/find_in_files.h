@@ -8,6 +8,7 @@
 
 #include <QDialog>
 #include <QKeyEvent>
+#include <QListWidget>
 
 #include <common/filesystem.h>
 
@@ -22,7 +23,11 @@ namespace TF
     FindInFilesDialog(const Filesys::Dir& startDir, QWidget* parent);
   protected:
     virtual void keyPressEvent(QKeyEvent* event);
+  private slots:
+    void OnResultItemActivated(QListWidgetItem* item);
   private:
+    void StartSearch();
+
     Ui_FindInFilesDialog* Ui;
   };
 } // namespace TF

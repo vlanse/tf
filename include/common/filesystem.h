@@ -13,6 +13,8 @@
 
 namespace Filesys
 {
+  extern const char PATH_SEPARATOR;
+
   class FileInfo
   {
   public:
@@ -38,4 +40,7 @@ namespace Filesys
   Common::Error CreateDir(const std::wstring& path);
 
   Common::Error Copy(const FileInfo& source, const FileInfo& destination);
+
+  typedef std::function<void (const std::string&)> WalkCallback;
+  Common::Error WalkDir(const Dir& dir, WalkCallback callback);
 } // namespace Platform

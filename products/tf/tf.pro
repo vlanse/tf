@@ -34,6 +34,7 @@ HEADERS += \
   main_window.h \
   settings.h \
   settings_dialog.h \
+  shell_utils.h \
   svn_supp.h \
   tab_context.h \
   tab_manager.h \
@@ -49,6 +50,7 @@ SOURCES += \
   main_window.cpp \
   settings.cpp \
   settings_dialog.cpp \
+  shell_utils.cpp \
   svn_supp.cpp \
   tab_context.cpp \
   tab_manager.cpp \

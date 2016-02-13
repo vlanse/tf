@@ -17,6 +17,8 @@
 
 namespace Filesys
 {
+  const char PATH_SEPARATOR = '/';
+
   namespace
   {
     typedef std::function<void(FTSENT*)> TraverseCallbackFunction;
@@ -72,7 +74,7 @@ namespace Filesys
         case FTS_SL:
         case FTS_SLNONE:
         case FTS_DEFAULT:
-          DEBUG(Common::MODULE_COMMON, L"traverse: " + Common::StringToWideString(curr->fts_accpath));
+          // DEBUG(Common::MODULE_COMMON, L"traverse: " + Common::StringToWideString(curr->fts_accpath));
           traverseCallback(curr);
           break;
         }
@@ -109,6 +111,11 @@ namespace Filesys
         progress(totalCount, ++processed);
       }
       DEBUG(Common::MODULE_COMMON, L"Removed: " + Common::StringToWideString(curr->fts_accpath));
+    }
+
+    void ProcessEntry(WalkCallback callback, FTSENT* curr)
+    {
+      callback(curr->fts_accpath);
     }
   } // namespace
 
@@ -147,5 +154,10 @@ namespace Filesys
     DEBUG(Common::MODULE_COMMON, L"CreateDir: " + path);
     mkdir(Common::WideStringToString(path).c_str(), 0755);
     return Common::Success;
+  }
+
+  Common::Error WalkDir(const Dir& dir, WalkCallback callback)
+  {
+    return TraverseDirectoryTree(dir, std::bind(ProcessEntry, callback, std::placeholders::_1));
   }
 } // namespace Filesys

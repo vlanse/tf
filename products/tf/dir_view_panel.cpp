@@ -14,6 +14,7 @@
 #include "event_filters.h"
 #include "find_in_files.h"
 #include "settings.h"
+#include "shell_utils.h"
 
 #include <common/filesystem.h>
 
@@ -37,14 +38,6 @@ namespace TF
       qApp->postEvent(widget, releaseEvent);
     }
 
-    void ShellOpenEditorForFile(const QString& file)
-    {
-      QStringList args;
-      args << "-a" << "Sublime Text 2" << file;
-      qDebug() << "Open editor for file with args " << args;
-      QProcess::startDetached("open", args);
-    }
-
     void EnsureFileExists(const QString& filePath)
     {
       QFile f(filePath);
@@ -53,22 +46,6 @@ namespace TF
         f.open(QIODevice::ReadWrite);
         f.close();
       }
-    }
-
-    void ShellOpenTerminal(const QString& path)
-    {
-      QStringList args;
-      args << "-a" << "iterm" << path;
-      qDebug() << "Open terminal for path" << path;
-      QProcess::startDetached("open", args);
-    }
-
-    void ShellRevealInFinder(const QString& path)
-    {
-      QStringList args;
-      args << "-R" << path;
-      qDebug() << "Reveal path in finder" << path;
-      QProcess::startDetached("open", args);
     }
   } // namespace
 
@@ -162,12 +139,12 @@ namespace TF
 
   void DirViewPanel::OnRevealInFinder()
   {
-    ShellRevealInFinder(CurrentSelection.absoluteFilePath());
+    Shell::RevealInFinder(CurrentSelection.absoluteFilePath());
   }
 
   void DirViewPanel::OnOpenTerminal()
   {
-    ShellOpenTerminal(Model->GetRoot().absolutePath());
+    Shell::OpenTerminal(Model->GetRoot().absolutePath());
   }
 
   void DirViewPanel::OnHeaderGeometryChanged()
@@ -335,7 +312,7 @@ namespace TF
       else if (event.key() == Qt::Key_F4)
       {
         qDebug() << "Request to edit file detected:" << CurrentSelection.absoluteFilePath();
-        ShellOpenEditorForFile(CurrentSelection.absoluteFilePath());
+        Shell::OpenEditorForFile(CurrentSelection.absoluteFilePath());
       }
       else if (event.key() == Qt::Key_Delete) // Fn + Backspace
       {
@@ -373,7 +350,7 @@ namespace TF
         filePath += dlg->GetFileName();
         qDebug() << "Request to edit file by entered name, full path is" << filePath;
         EnsureFileExists(filePath);
-        ShellOpenEditorForFile(filePath);
+        Shell::OpenEditorForFile(filePath);
       }
     }
     else if (event.modifiers() == Qt::ControlModifier)
@@ -400,7 +377,7 @@ namespace TF
       if (event.key() == Qt::Key_C)
       {
         qDebug() << "Open terminal request";
-        ShellOpenTerminal(Model->GetRoot().absolutePath());
+        Shell::OpenTerminal(Model->GetRoot().absolutePath());
       }
     }
   }
