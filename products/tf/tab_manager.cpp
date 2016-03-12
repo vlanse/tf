@@ -40,6 +40,7 @@ namespace TF
     {
       QJsonValue tabsData = tabsObject.toObject()["tabs"];
       const int activeIndex = tabsObject.toObject()["active_index"].toInt();
+      side.Active = tabsObject.toObject()["active"].toBool(false);
       QJsonArray tabsArray;
       if (!tabsData.isArray())
       {
@@ -83,7 +84,7 @@ namespace TF
       }
       result["tabs"] = tabs;
       result["active_index"] = side.Container->currentIndex();
-      qDebug() << "set current index to settings" << side.Container->currentIndex();
+      result["active"] = side.Active;
       return result;
     }
   } // namespace
@@ -114,6 +115,11 @@ namespace TF
     const QJsonDocument data = Settings::LoadTabs();
     RestoreTabs(data.object().value("left"), this, LeftSide);
     RestoreTabs(data.object().value("right"), this, RightSide);
+    if (!LeftSide.Active && !RightSide.Active)
+    {
+      LeftSide.Active = true;
+    }
+    SetFocusOnView();
   }
 
   void TabManager::SaveContext()
@@ -135,6 +141,7 @@ namespace TF
     LeftSide.Active = !LeftSide.Active;
     RightSide.Active = !RightSide.Active;
 
+    SaveContext();
     SetFocusOnView();
   }
 
