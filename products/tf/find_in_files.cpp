@@ -11,57 +11,128 @@
 #include <common/filesystem.h>
 
 #include <QDebug>
+#include <QThread>
 
 #include <string>
 #include <functional>
 
 namespace TF
 {
-  namespace
+  class Worker: public QThread
   {
-    void FilterCallback(const QRegExp& searchFor, const QString& findText, QStringList& result, const std::string& filename)
+    Q_OBJECT
+  public:
+    Worker(QObject* parent);
+    void StartSearch(const QString& where, const QString& what, const QString& content);
+    void Cancel();
+  protected:
+    virtual void run();
+  signals:
+    void GotResult(const QString& item);
+    void Progress(const QString& currentFolder);
+  private:
+    void FilterCallback(const std::string& filename);
+
+    bool CancelFlag;
+    QString Where;
+    QRegExp What;
+    QString Content;
+    int Step;
+  };
+
+ #include "find_in_files.moc"
+
+  Worker::Worker(QObject* parent)
+    : QThread(parent)
+    , CancelFlag(false)
+    , Step(0)
+  {
+  }
+
+  void Worker::StartSearch(const QString& where, const QString& what, const QString& content)
+  {
+    Where = where;
+    What = QRegExp(what);
+    What.setCaseSensitivity(Qt::CaseInsensitive);
+    What.setPatternSyntax(QRegExp::Wildcard);
+    Content = content;
+    start();
+  }
+
+  void Worker::Cancel()
+  {
+    CancelFlag = true;
+  }
+
+  void Worker::run()
+  {
+    qDebug() << "Start search";
+    QRegExp search = QRegExp(What);
+    Step = 0;
+
+    Filesys::WalkDir(
+      Filesys::Dir(Where.toStdWString()),
+      std::bind(
+        &Worker::FilterCallback,
+        this,
+        std::placeholders::_1
+      )
+    );
+  }
+
+  void Worker::FilterCallback(const std::string& filename)
+  {
+    const QString& fullPath = QString::fromStdString(filename);
+    const int lastSep = fullPath.indexOf(Filesys::PATH_SEPARATOR);
+    const QString& folder = fullPath.left(lastSep);
+    if (++Step % 10 == 0)
     {
-      const QString& fullPath = QString::fromStdString(filename);
-      const QStringList& items = fullPath.split(Filesys::PATH_SEPARATOR);
-      if (items.empty())
+      emit Progress(folder);
+    }
+
+    const QStringList& items = fullPath.split(Filesys::PATH_SEPARATOR);
+    if (items.empty())
+    {
+      return;
+    }
+    const QString& item = items.last();
+
+    if (What.exactMatch(item))
+    {
+      if (Content.isEmpty())
       {
+        emit GotResult(fullPath);
         return;
       }
-      const QString& item = items.last();
 
-      if (searchFor.exactMatch(item))
+      QFile f(fullPath);
+      f.open(QIODevice::ReadOnly);
+      QString part;
+      do
       {
-        if (findText.isEmpty())
+        part = f.read(1024);
+        if (part.indexOf(Content, Qt::CaseInsensitive) != -1)
         {
-          result.append(fullPath);
+          emit GotResult(fullPath);
           return;
         }
-
-        QFile f(fullPath);
-        f.open(QIODevice::ReadOnly);
-        QByteArray data;
-        do
-        {
-          const QString& part = f.read(1024);
-          if (part.indexOf(findText, Qt::CaseInsensitive) != -1)
-          {
-            result.append(fullPath);
-            return;
-          }
-        }
-        while (!data.isEmpty());
-        f.close();
       }
+      while (!part.isEmpty());
+      f.close();
     }
-  } // namespace
+  }
 
   FindInFilesDialog::FindInFilesDialog(const Filesys::Dir& startDir, QWidget* parent)
     : QDialog(parent)
     , Ui(new Ui_FindInFilesDialog)
+    , Searcher(new Worker(this))
   {
     Ui->setupUi(this);
     Ui->SearchInEdit->setText(QString::fromStdWString(startDir.GetPath()));
     connect(Ui->ResultView, SIGNAL(itemActivated(QListWidgetItem*)), SLOT(OnResultItemActivated(QListWidgetItem*)));
+    connect(Searcher, SIGNAL(GotResult(const QString&)), SLOT(OnGotResult(const QString&)));
+    connect(Searcher, SIGNAL(Progress(const QString&)), SLOT(OnProgress(const QString&)));
+    Ui->SearchForEdit->setFocus();
   }
 
   void FindInFilesDialog::OnResultItemActivated(QListWidgetItem* item)
@@ -72,31 +143,17 @@ namespace TF
   void FindInFilesDialog::StartSearch()
   {
     Ui->ResultView->clear();
-    const QString& searchIn = Ui->SearchInEdit->text();
+    Searcher->StartSearch(Ui->SearchInEdit->text(), Ui->SearchForEdit->lineEdit()->text(), Ui->FindTextEdit->lineEdit()->text());
+  }
 
-    QRegExp search = QRegExp(Ui->SearchForEdit->text());
-    search.setCaseSensitivity(Qt::CaseInsensitive);
-    search.setPatternSyntax(QRegExp::Wildcard);
+  void FindInFilesDialog::OnGotResult(const QString& result)
+  {
+    Ui->ResultView->addItem(result);
+  }
 
-    QStringList result;
-
-    const QString& findText = Ui->FindTextEdit->text();
-
-    Filesys::WalkDir(
-      Filesys::Dir(searchIn.toStdWString()),
-      std::bind(
-        FilterCallback,
-        std::cref(search),
-        std::cref(findText),
-        std::ref(result),
-        std::placeholders::_1
-      )
-    );
-
-    foreach(const QString& item, result)
-    {
-      Ui->ResultView->addItem(item);
-    }
+  void FindInFilesDialog::OnProgress(const QString& folder)
+  {
+    Ui->ProgressLabel->setText(folder);
   }
 
   void FindInFilesDialog::keyPressEvent(QKeyEvent* event)

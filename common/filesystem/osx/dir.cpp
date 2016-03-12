@@ -149,6 +149,13 @@ namespace Filesys
     return TraverseDirectoryTree(dir, std::bind(RemoveEntry, entries, std::ref(processed), progress, std::placeholders::_1));
   }
 
+  int CountFiles(const Dir& dir)
+  {
+    std::size_t entries = 0;
+    TraverseDirectoryTree(dir, std::bind(EntryCounter, std::ref(entries), std::placeholders::_1));
+    return entries;
+  }
+
   Common::Error CreateDir(const std::wstring& path)
   {
     DEBUG(Common::MODULE_COMMON, L"CreateDir: " + path);

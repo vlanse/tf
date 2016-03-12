@@ -41,6 +41,8 @@ namespace Filesys
 
   Common::Error Copy(const FileInfo& source, const FileInfo& destination);
 
+  int CountFiles(const Dir& dir);
+
   typedef std::function<void (const std::string&)> WalkCallback;
   Common::Error WalkDir(const Dir& dir, WalkCallback callback);
 } // namespace Platform

@@ -62,3 +62,4 @@ INCLUDEPATH += \
   $${PATHSTEP}/text \
   $${PATHSTEP}/make \
   $${UI_DIR} \
+  $${MOC_DIR} \
