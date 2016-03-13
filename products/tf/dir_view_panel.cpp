@@ -367,8 +367,9 @@ namespace TF
       }
       else if (event.key() == Qt::Key_F)
       {
-        qDebug() << "Find in files request";
-        FindInFilesDialog* dlg = new FindInFilesDialog(Filesys::Dir(CurrentSelection.absolutePath().toStdWString()), this);
+        const QString& searchRoot = Model->GetRoot().absolutePath();
+        qDebug() << "Find in files request, root dir" << searchRoot;
+        FindInFilesDialog* dlg = new FindInFilesDialog(Filesys::Dir(searchRoot.toStdWString()), this);
         dlg->exec();
       }
     }

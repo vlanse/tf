@@ -93,7 +93,7 @@
    <item>
     <widget class="QLabel" name="ProgressLabel">
      <property name="text">
-      <string>Progress</string>
+      <string/>
      </property>
     </widget>
    </item>
