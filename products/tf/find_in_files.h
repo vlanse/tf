@@ -23,6 +23,7 @@ namespace TF
     Q_OBJECT
   public:
     FindInFilesDialog(const Filesys::Dir& startDir, QWidget* parent);
+    ~FindInFilesDialog();
   protected:
     virtual void keyPressEvent(QKeyEvent* event);
   private slots:

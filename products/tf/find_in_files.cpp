@@ -61,7 +61,13 @@ namespace TF
 
   void Worker::Cancel()
   {
+    if (!isRunning())
+    {
+      return;
+    }
     CancelFlag = true;
+    QThread::wait();
+    qDebug() << "Search canceled";
   }
 
   void Worker::run()
@@ -83,6 +89,11 @@ namespace TF
 
   void Worker::FilterCallback(const std::string& filename, Filesys::FileObjectType ftype)
   {
+    if (CancelFlag)
+    {
+      QThread::terminate();
+    }
+
     const QString& fullPath = QString::fromStdString(filename);
     const int lastSep = fullPath.indexOf(Filesys::PATH_SEPARATOR);
     const QString& folder = fullPath.left(lastSep);
@@ -113,6 +124,11 @@ namespace TF
         QString part;
         do
         {
+          if (CancelFlag)
+          {
+            QThread::terminate();
+          }
+
           part = f.read(1024);
           if (part.indexOf(Content, Qt::CaseInsensitive) != -1)
           {
@@ -137,6 +153,11 @@ namespace TF
     connect(Searcher, SIGNAL(GotResult(const QString&)), SLOT(OnGotResult(const QString&)));
     connect(Searcher, SIGNAL(Progress(const QString&)), SLOT(OnProgress(const QString&)));
     Ui->SearchForEdit->setFocus();
+  }
+
+  FindInFilesDialog::~FindInFilesDialog()
+  {
+    Searcher->Cancel();
   }
 
   void FindInFilesDialog::OnResultItemActivated(QListWidgetItem* item)
