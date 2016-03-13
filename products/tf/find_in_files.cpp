@@ -30,6 +30,7 @@ namespace TF
   signals:
     void GotResult(const QString& item);
     void Progress(const QString& currentFolder);
+    void Complete();
   private:
     void FilterCallback(const std::string& filename, Filesys::FileObjectType ftype);
 
@@ -85,6 +86,8 @@ namespace TF
         std::placeholders::_2
       )
     );
+
+    emit Complete();
   }
 
   void Worker::FilterCallback(const std::string& filename, Filesys::FileObjectType ftype)
@@ -97,9 +100,9 @@ namespace TF
     const QString& fullPath = QString::fromStdString(filename);
     const int lastSep = fullPath.indexOf(Filesys::PATH_SEPARATOR);
     const QString& folder = fullPath.left(lastSep);
-    if (++Step % 10 == 0)
+    if (ftype == Filesys::FILE_DIRECTORY)
     {
-      emit Progress(folder);
+      emit Progress(QString::fromStdString(filename));
     }
 
     const QStringList& items = fullPath.split(Filesys::PATH_SEPARATOR);
@@ -152,6 +155,7 @@ namespace TF
     connect(Ui->ResultView, SIGNAL(itemActivated(QListWidgetItem*)), SLOT(OnResultItemActivated(QListWidgetItem*)));
     connect(Searcher, SIGNAL(GotResult(const QString&)), SLOT(OnGotResult(const QString&)));
     connect(Searcher, SIGNAL(Progress(const QString&)), SLOT(OnProgress(const QString&)));
+    connect(Searcher, SIGNAL(Complete()), SLOT(OnComplete()));
     Ui->SearchForEdit->setFocus();
   }
 
@@ -179,6 +183,11 @@ namespace TF
   void FindInFilesDialog::OnProgress(const QString& folder)
   {
     Ui->ProgressLabel->setText(folder);
+  }
+
+  void FindInFilesDialog::OnComplete()
+  {
+    Ui->ProgressLabel->setText("Search complete");
   }
 
   void FindInFilesDialog::keyPressEvent(QKeyEvent* event)

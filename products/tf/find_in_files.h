@@ -30,6 +30,7 @@ namespace TF
     void OnResultItemActivated(QListWidgetItem* item);
     void OnGotResult(const QString& item);
     void OnProgress(const QString& folder);
+    void OnComplete();
   private:
     void StartSearch();
     Worker* Searcher;
