@@ -31,7 +31,7 @@ namespace TF
     void GotResult(const QString& item);
     void Progress(const QString& currentFolder);
   private:
-    void FilterCallback(const std::string& filename);
+    void FilterCallback(const std::string& filename, Filesys::FileObjectType ftype);
 
     bool CancelFlag;
     QString Where;
@@ -75,12 +75,13 @@ namespace TF
       std::bind(
         &Worker::FilterCallback,
         this,
-        std::placeholders::_1
+        std::placeholders::_1,
+        std::placeholders::_2
       )
     );
   }
 
-  void Worker::FilterCallback(const std::string& filename)
+  void Worker::FilterCallback(const std::string& filename, Filesys::FileObjectType ftype)
   {
     const QString& fullPath = QString::fromStdString(filename);
     const int lastSep = fullPath.indexOf(Filesys::PATH_SEPARATOR);
@@ -105,20 +106,23 @@ namespace TF
         return;
       }
 
-      QFile f(fullPath);
-      f.open(QIODevice::ReadOnly);
-      QString part;
-      do
+      if (ftype == Filesys::FILE_REGULAR)
       {
-        part = f.read(1024);
-        if (part.indexOf(Content, Qt::CaseInsensitive) != -1)
+        QFile f(fullPath);
+        f.open(QIODevice::ReadOnly);
+        QString part;
+        do
         {
-          emit GotResult(fullPath);
-          return;
+          part = f.read(1024);
+          if (part.indexOf(Content, Qt::CaseInsensitive) != -1)
+          {
+            emit GotResult(fullPath);
+            return;
+          }
         }
+        while (!part.isEmpty());
+        f.close();
       }
-      while (!part.isEmpty());
-      f.close();
     }
   }
 

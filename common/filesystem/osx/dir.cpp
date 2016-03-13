@@ -115,7 +115,16 @@ namespace Filesys
 
     void ProcessEntry(WalkCallback callback, FTSENT* curr)
     {
-      callback(curr->fts_accpath);
+      FileObjectType fileType = FILE_OTHER;
+      if (curr->fts_info == FTS_F)
+      {
+        fileType = FILE_REGULAR;
+      }
+      else if (curr->fts_info == FTS_D || curr->fts_info == FTS_DC || curr->fts_info == FTS_DP)
+      {
+        fileType = FILE_DIRECTORY;
+      }
+      callback(curr->fts_accpath, fileType);
     }
   } // namespace
 

@@ -43,6 +43,13 @@ namespace Filesys
 
   int CountFiles(const Dir& dir);
 
-  typedef std::function<void (const std::string&)> WalkCallback;
+  enum FileObjectType
+  {
+    FILE_REGULAR,
+    FILE_DIRECTORY,
+    FILE_OTHER = 999,
+  };
+
+  typedef std::function<void (const std::string&, FileObjectType)> WalkCallback;
   Common::Error WalkDir(const Dir& dir, WalkCallback callback);
 } // namespace Platform
