@@ -17,6 +17,7 @@ class  Ui_FindInFilesDialog;
 namespace TF
 {
   class Worker;
+  class SearchResultModel;
 
   class FindInFilesDialog: public QDialog
   {
@@ -27,14 +28,15 @@ namespace TF
   protected:
     virtual void keyPressEvent(QKeyEvent* event);
   private slots:
-    void OnResultItemActivated(QListWidgetItem* item);
+    void OnResultItemActivated(const QModelIndex& item);
     void OnGotResult(const QString& item);
     void OnProgress(const QString& folder);
     void OnComplete();
   private:
     void StartSearch();
-    Worker* Searcher;
 
     Ui_FindInFilesDialog* Ui;
+    Worker* Searcher;
+    SearchResultModel* Model;
   };
 } // namespace TF

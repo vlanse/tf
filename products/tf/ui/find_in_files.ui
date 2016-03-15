@@ -81,7 +81,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QListWidget" name="ResultView">
+       <widget class="QListView" name="ResultView">
         <property name="selectionBehavior">
          <enum>QAbstractItemView::SelectRows</enum>
         </property>

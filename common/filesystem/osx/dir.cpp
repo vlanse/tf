@@ -21,7 +21,7 @@ namespace Filesys
 
   namespace
   {
-    typedef std::function<void(FTSENT*)> TraverseCallbackFunction;
+    typedef std::function<bool(FTSENT*)> TraverseCallbackFunction;
     Common::Error TraverseDirectoryTree(const Dir& dir, TraverseCallbackFunction traverseCallback)
     {
       std::vector<char> buffer = Common::WideStringToCStr(dir.GetPath());
@@ -75,7 +75,10 @@ namespace Filesys
         case FTS_SLNONE:
         case FTS_DEFAULT:
           // DEBUG(Common::MODULE_COMMON, L"traverse: " + Common::StringToWideString(curr->fts_accpath));
-          traverseCallback(curr);
+          if (!traverseCallback(curr))
+          {
+            fts_set(ftsp, curr, FTS_SKIP);
+          }
           break;
         }
       }
@@ -94,26 +97,28 @@ namespace Filesys
       return Common::Success;
     }
 
-    void EntryCounter(std::size_t& count, FTSENT* /*unused*/)
+    bool EntryCounter(std::size_t& count, FTSENT* /*unused*/)
     {
       ++count;
+      return true;
     }
 
-    void RemoveEntry(std::size_t totalCount, std::size_t& processed, ProgressCallback progress, FTSENT* curr)
+    bool RemoveEntry(std::size_t totalCount, std::size_t& processed, ProgressCallback progress, FTSENT* curr)
     {
       if (remove(curr->fts_accpath) < 0)
       {
         DEBUG(Common::MODULE_COMMON, L"Failed to remove: " + Common::StringToWideString(curr->fts_accpath));
-        return;
+        return true;
       }
       if (progress)
       {
         progress(totalCount, ++processed);
       }
       DEBUG(Common::MODULE_COMMON, L"Removed: " + Common::StringToWideString(curr->fts_accpath));
+      return true;
     }
 
-    void ProcessEntry(WalkCallback callback, FTSENT* curr)
+    bool ProcessEntry(WalkCallback callback, FTSENT* curr)
     {
       FileObjectType fileType = FILE_OTHER;
       if (curr->fts_info == FTS_F)
@@ -125,6 +130,7 @@ namespace Filesys
         fileType = FILE_DIRECTORY;
       }
       callback(curr->fts_accpath, fileType);
+      return true;
     }
   } // namespace
 
