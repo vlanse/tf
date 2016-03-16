@@ -50,6 +50,6 @@ namespace Filesys
     FILE_OTHER = 999,
   };
 
-  typedef std::function<void (const std::string&, FileObjectType)> WalkCallback;
-  Common::Error WalkDir(const Dir& dir, WalkCallback callback);
+  typedef std::function<bool (const std::string&, FileObjectType)> WalkCallback;
+  Common::Error WalkDir(const Dir& dir, WalkCallback callback, bool depthFirst = true);
 } // namespace Platform

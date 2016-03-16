@@ -100,7 +100,8 @@ namespace TF
         this,
         std::placeholders::_1,
         std::placeholders::_2
-      )
+      ),
+      false
     );
 
     emit Complete();
@@ -116,13 +117,14 @@ namespace TF
 
     const QString& fullPath = QString::fromStdString(filename);
     const int lastSep = fullPath.lastIndexOf(Filesys::PATH_SEPARATOR);
-    const QString& folder = fullPath.right(fullPath.size() - lastSep + 1);
+    const QString& folder = fullPath.right(fullPath.size() - lastSep - 1);
 
     if (ftype == Filesys::FILE_DIRECTORY)
     {
       // TODO: use actual file attributes
       if (folder.startsWith(".") && !(DirFilters & QDir::Hidden))
       {
+        qDebug() << "exclude from search" << folder;
         return false;
       }
       emit Progress(QString::fromStdString(filename));

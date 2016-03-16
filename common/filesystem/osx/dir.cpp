@@ -22,7 +22,7 @@ namespace Filesys
   namespace
   {
     typedef std::function<bool(FTSENT*)> TraverseCallbackFunction;
-    Common::Error TraverseDirectoryTree(const Dir& dir, TraverseCallbackFunction traverseCallback)
+    Common::Error TraverseDirectoryTree(const Dir& dir, TraverseCallbackFunction traverseCallback, bool depthFirst = true)
     {
       std::vector<char> buffer = Common::WideStringToCStr(dir.GetPath());
       int ret = 0;
@@ -65,16 +65,35 @@ namespace Filesys
           // Not reached unless FTS_LOGICAL, FTS_SEEDOT, or FTS_NOSTAT were
           // passed to fts_open()
           break;
-        case FTS_D:
-          // Do nothing. Need depth-first search, so directories are deleted
-          // in FTS_DP
-          break;
-        case FTS_DP:
+
         case FTS_F:
         case FTS_SL:
         case FTS_SLNONE:
         case FTS_DEFAULT:
-          // DEBUG(Common::MODULE_COMMON, L"traverse: " + Common::StringToWideString(curr->fts_accpath));
+
+        case FTS_D:
+          if (depthFirst)
+          {
+            break;
+          }
+          if (!traverseCallback(curr))
+          {
+            int res = fts_set(ftsp, curr, FTS_SKIP);
+            if (res == -1)
+            {
+              fprintf(stderr, "fts_set failed: %s\n", strerror(errno));
+            }
+            else
+            {
+              fprintf(stderr, "ok fts_set");
+            }
+          }
+          break;
+        case FTS_DP:
+          if (!depthFirst)
+          {
+            break;
+          }
           if (!traverseCallback(curr))
           {
             fts_set(ftsp, curr, FTS_SKIP);
@@ -129,8 +148,7 @@ namespace Filesys
       {
         fileType = FILE_DIRECTORY;
       }
-      callback(curr->fts_accpath, fileType);
-      return true;
+      return callback(curr->fts_accpath, fileType);
     }
   } // namespace
 
@@ -178,8 +196,8 @@ namespace Filesys
     return Common::Success;
   }
 
-  Common::Error WalkDir(const Dir& dir, WalkCallback callback)
+  Common::Error WalkDir(const Dir& dir, WalkCallback callback, bool depthFirst)
   {
-    return TraverseDirectoryTree(dir, std::bind(ProcessEntry, callback, std::placeholders::_1));
+    return TraverseDirectoryTree(dir, std::bind(ProcessEntry, callback, std::placeholders::_1), depthFirst);
   }
 } // namespace Filesys
