@@ -5,7 +5,7 @@
  *      Author: Vladimir Semenov (vlanse@gmail.com)
  */
 #include "edit_file.h"
-#include "ui_edit_file.h"
+#include <ui_edit_file.h>
 
 namespace TF
 {

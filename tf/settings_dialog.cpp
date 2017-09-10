@@ -7,7 +7,7 @@
 #include "settings_dialog.h"
 #include "ui_settings_dialog.h"
 
-#include <settings.h>
+#include "settings.h"
 
 namespace TF
 {

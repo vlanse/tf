@@ -78,15 +78,7 @@ namespace Filesys
           }
           if (!traverseCallback(curr))
           {
-            int res = fts_set(ftsp, curr, FTS_SKIP);
-            if (res == -1)
-            {
-              fprintf(stderr, "fts_set failed: %s\n", strerror(errno));
-            }
-            else
-            {
-              fprintf(stderr, "ok fts_set");
-            }
+            fts_set(ftsp, curr, FTS_SKIP);
           }
           break;
         case FTS_DP:

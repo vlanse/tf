@@ -1,8 +1,7 @@
-/.shadow/
 Makefile
 .cproject
 .project
-.qmake.stash
 .idea
 .settings
 CMakeLists.txt
+cmake-build-debug/

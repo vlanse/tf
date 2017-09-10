@@ -13,6 +13,7 @@
 
 #include <QDebug>
 #include <QThread>
+#include <QElapsedTimer>
 
 #include <string>
 #include <functional>
@@ -54,6 +55,8 @@ namespace TF
     virtual QVariant data(const QModelIndex& index = QModelIndex(), int role = Qt::DisplayRole) const;
   private:
     QStringList Data;
+    QStringList ToInsert;
+    QElapsedTimer RefreshTimer;
   };
 
  #include "find_in_files.moc"
@@ -178,11 +181,34 @@ namespace TF
 
   void SearchResultModel::AddItem(const QString& item)
   {
+    if (!RefreshTimer.isValid())
+    {
+      RefreshTimer.start();
+    }
+
+    if (RefreshTimer.elapsed() < 100)
+    {
+      ToInsert << item;
+    }
+    else
+    {
+      const QModelIndex parent = QModelIndex();
+      const int rows = rowCount(parent);
+      QAbstractListModel::beginInsertRows(parent, rows, rows);
+      Data << ToInsert;
+      QAbstractListModel::endInsertRows();
+
+      RefreshTimer.invalidate();
+      RefreshTimer.start();
+    }
+
+    /*
     const QModelIndex parent = QModelIndex();
     const int rows = rowCount(parent);
     QAbstractListModel::beginInsertRows(parent, rows, rows);
     Data << item;
     QAbstractListModel::endInsertRows();
+    */
   }
 
   void SearchResultModel::Clear()
@@ -225,6 +251,9 @@ namespace TF
     Ui->SearchInEdit->setText(QString::fromStdWString(startDir.GetPath()));
     connect(Ui->ResultView, SIGNAL(activated(const QModelIndex&)), SLOT(OnResultItemActivated(const QModelIndex&)));
     Ui->ResultView->setModel(Model);
+    Ui->ResultView->setUniformItemSizes(true);
+    Ui->ResultView->setLayoutMode(QListView::Batched);
+    Ui->ResultView->setBatchSize(10);
     connect(Searcher, SIGNAL(GotResult(const QString&)), SLOT(OnGotResult(const QString&)));
     connect(Searcher, SIGNAL(Progress(const QString&)), SLOT(OnProgress(const QString&)));
     connect(Searcher, SIGNAL(Complete()), SLOT(OnComplete()));
@@ -260,8 +289,8 @@ namespace TF
   void FindInFilesDialog::OnComplete()
   {
     Ui->ResultView->setFocus();
-    qDebug() << "search complete";
-    Ui->ProgressLabel->setText("Search complete");
+    qDebug() << "search complete, found" << Model->rowCount() << " items";
+    Ui->ProgressLabel->setText(QString("Search complete, %1 items found").arg(Model->rowCount()));
   }
 
   void FindInFilesDialog::keyPressEvent(QKeyEvent* event)
