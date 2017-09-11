@@ -1,7 +1,9 @@
 Makefile
-.cproject
-.project
 .idea
-.settings
 CMakeLists.txt
 cmake-build-debug/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+tf.app/
+tf_autogen/

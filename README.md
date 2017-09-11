@@ -8,5 +8,4 @@ How to build
 * download and install [CMake](https://cmake.org)
 * set variable ``CMAKE_PREFIX_PATH`` to point to your Qt installation, e.g. 
 ``CMAKE_PREFIX_PATH=/Users/me/Qt5.9.1/5.9.1/clang_64/lib/cmake``
-* run ``cmake``
-* run ``make``
+* run ``cmake . && make``
