@@ -10,12 +10,10 @@
 #include "dir_view_panel.h"
 #include "settings.h"
 
-#include <QPushButton>
 #include <QDebug>
 
 #include <QJsonArray>
 #include <QJsonObject>
-#include <QJsonValue>
 
 namespace TF
 {
