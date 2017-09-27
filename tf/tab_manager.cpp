@@ -11,9 +11,9 @@
 #include "settings.h"
 
 #include <QDebug>
-
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QTabBar>
 
 namespace TF
 {
@@ -37,18 +37,30 @@ namespace TF
     void RestoreTabs(const QJsonValue& tabsObject, TabManager* tabs, SideContext& side)
     {
       QJsonValue tabsData = tabsObject.toObject()["tabs"];
-      const int activeIndex = tabsObject.toObject()["active_index"].toInt();
+      int activeIndex = tabsObject.toObject()["active_index"].toInt();
       side.Active = tabsObject.toObject()["active"].toBool(false);
       QJsonArray tabsArray;
+
+      bool addDefaultView = false;
       if (!tabsData.isArray())
       {
-        QJsonObject obj;
-        obj["root"] = ROOT_DIR_NAME;
-        tabsArray.append(obj);
+        addDefaultView = true;
       }
       else
       {
         tabsArray = tabsData.toArray();
+        if (tabsArray.empty())
+        {
+          addDefaultView = true;
+        }
+      }
+
+      if (addDefaultView)
+      {
+        QJsonObject obj;
+        obj["root"] = ROOT_DIR_NAME;
+        tabsArray.append(obj);
+        activeIndex = 0;
       }
 
       foreach(const QJsonValue val, tabsArray)
@@ -76,9 +88,12 @@ namespace TF
       for (int i = 0; i < side.Container->count(); ++i)
       {
         DirViewPanel* tab = qobject_cast<DirViewPanel*>(side.Container->widget(i));
-        QJsonObject obj;
-        obj["root"] = tab->GetRootDir().path();
-        tabs.append(obj);
+        if (tab)
+        {
+          QJsonObject obj;
+          obj["root"] = tab->GetRootDir().path();
+          tabs.append(obj);
+        }
       }
       result["tabs"] = tabs;
       result["active_index"] = side.Container->currentIndex();
@@ -87,7 +102,44 @@ namespace TF
     }
   } // namespace
 
-  TabManager::TabManager(QTabWidget* leftContainer, QTabWidget* rightContainer, QObject* parent)
+  class MyTabBar: public QTabBar
+  {
+    Q_OBJECT
+  public:
+    MyTabBar(QWidget* parent);
+
+  protected:
+    QSize tabSizeHint(int index) const;
+  };
+
+#include "tab_manager.moc"
+
+  MyTabBar::MyTabBar(QWidget *parent)
+    : QTabBar(parent)
+  {
+  }
+
+  QSize MyTabBar::tabSizeHint(int index) const
+  {
+    return {qBound(100, width() / count(), width()), 25};
+  }
+
+  MyTabWidget::MyTabWidget(QWidget *parent)
+    : QTabWidget(parent)
+  {
+    setTabBar(new MyTabBar(this));
+  }
+
+  void MyTabWidget::resizeEvent(QResizeEvent *event)
+  {
+    tabBar()->setMinimumWidth(event->size().width());
+  }
+
+  TabManager::TabManager(
+    QTabWidget* leftContainer,
+    QTabWidget* rightContainer,
+    QObject* parent
+  )
     : QObject(parent)
   {
     LeftSide.Active = true;
@@ -100,9 +152,9 @@ namespace TF
   DirViewPanel* TabManager::GetOppositeTab(DirViewPanel* current) const
   {
     const SideContext* side = FindSideForTab(current);
-    if (side == 0)
+    if (side == nullptr)
     {
-      return 0;
+      return nullptr;
     }
     const SideContext* oppositeSide = (side == &LeftSide ? &RightSide : &LeftSide);
     return qobject_cast<DirViewPanel*>(oppositeSide->Container->currentWidget());
@@ -203,7 +255,7 @@ namespace TF
     {
       return &RightSide;
     }
-    return 0;
+    return nullptr;
   }
 
   void TabManager::SetFocusOnView()

@@ -18,18 +18,31 @@ namespace TF
   {
     SideContext()
       : Active(false)
-      , Container(0)
+      , Container(nullptr)
     {}
 
     bool Active;
     QTabWidget* Container;
   };
 
+  class MyTabWidget: public QTabWidget
+  {
+    Q_OBJECT
+  public:
+    MyTabWidget(QWidget* parent);
+  protected:
+    void resizeEvent(QResizeEvent *event);
+  };
+
   class TabManager: public QObject
   {
     Q_OBJECT
   public:
-    TabManager(QTabWidget* leftContainer, QTabWidget* rightContainer, QObject* parent);
+    TabManager(
+      QTabWidget* leftContainer,
+      QTabWidget* rightContainer,
+      QObject* parent
+    );
     DirViewPanel* GetOppositeTab(DirViewPanel* current) const;
   public slots:
     void OnChangeSideRequest(bool force);

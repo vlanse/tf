@@ -49,7 +49,35 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QTabWidget" name="LeftTabs">
+        <widget class="TF::MyTabWidget" name="LeftTabs">
+         <property name="styleSheet">
+          <string notr="true">QTabWidget::pane {
+   position: absolute;
+}
+
+QTabWidget::tab-bar {
+    alignment: center;
+    min-width: 15000px;
+    border: 1px solid red;
+}
+
+QTabBar::tab {
+    min-width: 8ex;
+    padding: 2px;
+    text-align: center;
+    color: rgb(63, 63, 80);
+    border-right: 1px solid rgb(154, 154, 154);
+}
+
+QTabBar::tab:selected {
+  background-color: rgb(184, 184, 183);
+}
+
+QTabBar::tab:hover {
+  background-color: rgb(204, 204, 203);
+}
+</string>
+         </property>
          <property name="tabPosition">
           <enum>QTabWidget::North</enum>
          </property>
@@ -63,7 +91,7 @@
           <bool>true</bool>
          </property>
          <property name="tabsClosable">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="movable">
           <bool>true</bool>
@@ -71,7 +99,35 @@
         </widget>
        </item>
        <item>
-        <widget class="QTabWidget" name="RightTabs">
+        <widget class="TF::MyTabWidget" name="RightTabs">
+         <property name="styleSheet">
+          <string notr="true">QTabWidget::pane {
+   position: absolute;
+}
+
+QTabWidget::tab-bar {
+    alignment: center;
+    min-width: 15000px;
+    border: 1px solid red;
+}
+
+QTabBar::tab {
+    min-width: 8ex;
+    padding: 2px;
+    text-align: center;
+    color: rgb(63, 63, 80);
+    border-right: 1px solid rgb(154, 154, 154);
+}
+
+QTabBar::tab:selected {
+  background-color: rgb(184, 184, 183);
+}
+
+QTabBar::tab:hover {
+  background-color: rgb(204, 204, 203);
+}
+</string>
+         </property>
          <property name="currentIndex">
           <number>-1</number>
          </property>
@@ -127,6 +183,14 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TF::MyTabWidget</class>
+   <extends>QTabWidget</extends>
+   <header>tab_manager.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

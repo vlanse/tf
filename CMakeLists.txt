@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.3)
-project(tf)
+project(total_finder)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
@@ -13,6 +13,7 @@ set(CMAKE_AUTOUIC ON)
 
 include_directories(
         include
+        tf
         ${Qt5Core_INCLUDE_DIRS}
         ${Qt5Widgets_INCLUDE_DIRS}
 )
@@ -64,4 +65,8 @@ target_link_libraries(
         Qt5::Widgets
 )
 
-set_target_properties(tf PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/bundle.plist.in)
+set_target_properties(
+        tf PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/bundle.plist.in
+)
+
+set_target_properties(tf PROPERTIES OUTPUT_NAME "Total Finder")
