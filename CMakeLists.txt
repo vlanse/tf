@@ -13,7 +13,7 @@ set(CMAKE_AUTOUIC ON)
 
 include_directories(
         include
-        tf
+        total-finder
         ${Qt5Core_INCLUDE_DIRS}
         ${Qt5Widgets_INCLUDE_DIRS}
 )
@@ -30,43 +30,43 @@ set(SOURCE_FILES
         include/common/module.h
         include/common/string_utils.h
         include/common/trace.h
-        tf/create_dir.cpp
-        tf/create_dir.h
-        tf/dir_model.cpp
-        tf/dir_model.h
-        tf/dir_view_panel.cpp
-        tf/dir_view_panel.h
-        tf/edit_file.cpp
-        tf/edit_file.h
-        tf/event_filters.cpp
-        tf/event_filters.h
-        tf/find_in_files.cpp
-        tf/find_in_files.h
-        tf/main.cpp
-        tf/main_window.cpp
-        tf/main_window.h
-        tf/settings.cpp
-        tf/settings.h
-        tf/settings_dialog.cpp
-        tf/settings_dialog.h
-        tf/shell_utils.cpp
-        tf/shell_utils.h
-        tf/tab_context.cpp
-        tf/tab_context.h
-        tf/tab_manager.cpp
-        tf/tab_manager.h)
+        total-finder/create_dir.cpp
+        total-finder/create_dir.h
+        total-finder/dir_model.cpp
+        total-finder/dir_model.h
+        total-finder/dir_view_panel.cpp
+        total-finder/dir_view_panel.h
+        total-finder/edit_file.cpp
+        total-finder/edit_file.h
+        total-finder/event_filters.cpp
+        total-finder/event_filters.h
+        total-finder/find_in_files.cpp
+        total-finder/find_in_files.h
+        total-finder/main.cpp
+        total-finder/main_window.cpp
+        total-finder/main_window.h
+        total-finder/settings.cpp
+        total-finder/settings.h
+        total-finder/settings_dialog.cpp
+        total-finder/settings_dialog.h
+        total-finder/shell_utils.cpp
+        total-finder/shell_utils.h
+        total-finder/tab_context.cpp
+        total-finder/tab_context.h
+        total-finder/tab_manager.cpp
+        total-finder/tab_manager.h)
 
-add_executable(tf MACOSX_BUNDLE ${SOURCE_FILES})
+add_executable(total-finder MACOSX_BUNDLE ${SOURCE_FILES})
 
 target_link_libraries(
-        tf
+        total-finder
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
 )
 
 set_target_properties(
-        tf PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/bundle.plist.in
+        total-finder PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/bundle.plist.in
 )
 
-set_target_properties(tf PROPERTIES OUTPUT_NAME "Total Finder")
+set_target_properties(total-finder PROPERTIES OUTPUT_NAME "Total Finder")
