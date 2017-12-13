@@ -11,7 +11,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>TF</string>
+   <string>Total Finder</string>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -67,13 +70,10 @@ QTabBar::tab {
     text-align: center;
     color: rgb(63, 63, 80);
     border-right: 1px solid rgb(154, 154, 154);
+    background-color: rgb(184, 184, 183);
 }
 
 QTabBar::tab:selected {
-  background-color: rgb(184, 184, 183);
-}
-
-QTabBar::tab:hover {
   background-color: rgb(204, 204, 203);
 }
 </string>
@@ -117,13 +117,10 @@ QTabBar::tab {
     text-align: center;
     color: rgb(63, 63, 80);
     border-right: 1px solid rgb(154, 154, 154);
+    background-color: rgb(184, 184, 183);
 }
 
 QTabBar::tab:selected {
-  background-color: rgb(184, 184, 183);
-}
-
-QTabBar::tab:hover {
   background-color: rgb(204, 204, 203);
 }
 </string>
