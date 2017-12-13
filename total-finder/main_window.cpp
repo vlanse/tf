@@ -8,15 +8,11 @@
 #include "main_window.h"
 #include "ui_main_window.h"
 
-#include "dir_model.h"
 #include "dir_view_panel.h"
-#include "event_filters.h"
 #include "settings.h"
 #include "settings_dialog.h"
-#include "tab_manager.h"
 
 #include <QDebug>
-#include <QDir>
 
 namespace TF
 {
