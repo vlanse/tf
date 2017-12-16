@@ -9,7 +9,6 @@
 #include "settings.h"
 #include "shell_utils.h"
 
-#include <common/filesystem.h>
 
 #include <QDebug>
 #include <QThread>
@@ -76,6 +75,7 @@ namespace TF
     What.setCaseSensitivity(Qt::CaseInsensitive);
     What.setPatternSyntax(QRegExp::Wildcard);
     Content = content;
+    qDebug() << "Search started; where:" << where << ", content:" << Content;
     start();
   }
 
@@ -186,7 +186,7 @@ namespace TF
       RefreshTimer.start();
     }
 
-    if (RefreshTimer.elapsed() < 100)
+    if (RefreshTimer.elapsed() < 1000)
     {
       ToInsert << item;
     }
@@ -201,14 +201,6 @@ namespace TF
       RefreshTimer.invalidate();
       RefreshTimer.start();
     }
-
-    /*
-    const QModelIndex parent = QModelIndex();
-    const int rows = rowCount(parent);
-    QAbstractListModel::beginInsertRows(parent, rows, rows);
-    Data << item;
-    QAbstractListModel::endInsertRows();
-    */
   }
 
   void SearchResultModel::Clear()
@@ -273,7 +265,11 @@ namespace TF
   void FindInFilesDialog::StartSearch()
   {
     Model->Clear();
-    Searcher->StartSearch(Ui->SearchInEdit->text(), Ui->SearchForEdit->lineEdit()->text(), Ui->FindTextEdit->lineEdit()->text());
+    Searcher->StartSearch(
+      Ui->SearchInEdit->text(),
+      Ui->SearchForEdit->lineEdit()->text(),
+      Ui->FindTextEdit->lineEdit()->text()
+    );
   }
 
   void FindInFilesDialog::OnGotResult(const QString& result)
@@ -289,7 +285,7 @@ namespace TF
   void FindInFilesDialog::OnComplete()
   {
     Ui->ResultView->setFocus();
-    qDebug() << "search complete, found" << Model->rowCount() << " items";
+    qDebug() << "search complete, found" << Model->rowCount() << "items";
     Ui->ProgressLabel->setText(QString("Search complete, %1 items found").arg(Model->rowCount()));
   }
 

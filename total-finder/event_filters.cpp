@@ -7,7 +7,6 @@
 #include "event_filters.h"
 
 #include <QDebug>
-#include <QKeyEvent>
 
 namespace TF
 {
@@ -20,7 +19,7 @@ namespace TF
   {
     if (event->type() == QEvent::KeyPress)
     {
-      QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+      QKeyEvent *keyEvent = dynamic_cast<QKeyEvent*>(event);
       emit KeyPressed(*keyEvent);
 
       if (CodesToIntercept.contains(keyEvent->key()))
@@ -46,7 +45,7 @@ namespace TF
   {
     if (event->type() == QEvent::FocusIn || event->type() == QEvent::FocusOut)
     {
-      QFocusEvent *focusEvent = static_cast<QFocusEvent*>(event);
+      QFocusEvent *focusEvent = dynamic_cast<QFocusEvent*>(event);
       emit GotFocusEvent(*focusEvent);
     }
     return QObject::eventFilter(object, event);

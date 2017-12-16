@@ -17,7 +17,7 @@ namespace TF
     void OpenEditorForFile(const QString& file)
     {
       QStringList args;
-      args << "-a" << "Sublime Text 2" << file;
+      args << "-a" << "Sublime Text" << file;
       qDebug() << "Open editor for file with args " << args;
       QProcess::startDetached("open", args);
     }
