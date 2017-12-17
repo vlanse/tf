@@ -1,15 +1,9 @@
-/*
- * settings_dialog.cpp
- *
- *  Created on: Dec 27, 2015
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #include "settings_dialog.h"
 #include "ui_settings_dialog.h"
 
 #include "settings.h"
 
-namespace TF
+namespace TotalFinder
 {
   SettingsDialog::SettingsDialog(QWidget* parent)
     : QDialog(parent)
@@ -41,4 +35,4 @@ namespace TF
     const QDir::Filters dirFilters = Settings::LoadDirFilters();
     Settings::SaveDirFilters(state == Qt::Checked ? dirFilters | QDir::System : dirFilters & ~QDir::System);
   }
-} // namespace TF
+} // namespace TotalFinder

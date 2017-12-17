@@ -12,7 +12,7 @@
 
 class Ui_MainWindow;
 
-namespace TF
+namespace TotalFinder
 {
   class TabManager;
 
@@ -29,4 +29,4 @@ namespace TF
     Ui_MainWindow* Ui;
     TabManager* Tabs;
   };
-} // namespace TF
+} // namespace TotalFinder

@@ -1,9 +1,3 @@
-/*
- * event_filters.h
- *
- *  Created on: Dec 27, 2015
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #pragma once
 
 #include <QFocusEvent>
@@ -11,7 +5,7 @@
 #include <QList>
 #include <QObject>
 
-namespace TF
+namespace TotalFinder
 {
   class KeyPressFilter: public QObject
   {
@@ -37,4 +31,4 @@ namespace TF
   protected:
     bool eventFilter(QObject* object, QEvent* event);
   };
-} // namespace TF
+} // namespace TotalFinder

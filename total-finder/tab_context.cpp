@@ -1,15 +1,8 @@
-/*
- * tab_context.cpp
- *
- *  Created on: Feb 7, 2016
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
-
 #include "tab_context.h"
 #include "dir_view_panel.h"
 #include "tab_manager.h"
 
-namespace TF
+namespace TotalFinder
 {
   TabContext::TabContext(TabManager* tabs)
     : Tabs(tabs)
@@ -32,4 +25,4 @@ namespace TF
   {
     Tabs->OnChangeSideRequest(force);
   }
-} // namespace TF
+} // namespace TotalFinder

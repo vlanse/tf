@@ -1,15 +1,9 @@
-/*
- * tab_context.h
- *
- *  Created on: Jan 17, 2016
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #pragma once
 
 #include <QDir>
 #include <QFileInfo>
 
-namespace TF
+namespace TotalFinder
 {
   class DirViewPanel;
   class TabManager;
@@ -25,4 +19,4 @@ namespace TF
   private:
     TabManager* Tabs;
   };
-} // namespace TF
+} // namespace TotalFinder

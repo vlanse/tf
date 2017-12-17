@@ -1,17 +1,10 @@
-/*
- * dir_model.h
- *
- *  Created on: Dec 24, 2015
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
-
 #pragma once
 
 #include <QAbstractTableModel>
 #include <QFileSystemWatcher>
 #include <QDir>
 
-namespace TF
+namespace TotalFinder
 {
   class DirModel: public QAbstractTableModel
   {
@@ -39,4 +32,4 @@ namespace TF
 
   bool IsParentDir(const QDir& parent, const QDir& child);
   bool IsParentDir(const QDir& parent, const QFileInfo& child);
-} // namespace TF
+} // namespace TotalFinder

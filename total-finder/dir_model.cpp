@@ -1,9 +1,3 @@
-/*
- * dir_model.cpp
- *
- *  Created on: Dec 24, 2015
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #include "dir_model.h"
 #include "settings.h"
 
@@ -11,7 +5,7 @@
 #include <QDebug>
 #include <QFileIconProvider>
 
-namespace TF
+namespace TotalFinder
 {
   namespace
   {
@@ -178,7 +172,7 @@ namespace TF
         case COL_EXT:
           return GetNameAndExtension(currentItem).second;
         case COL_SIZE:
-          return currentItem.isDir() ? "[DIR]" : FormatSize(currentItem.size());
+          return currentItem.isDir() ? "--" : FormatSize(currentItem.size());
         case COL_MTIME:
           return currentItem.lastModified();
         case COL_PERMISSIONS:
@@ -243,4 +237,4 @@ namespace TF
   {
     return IsParentFileItem(parent.absolutePath(), child.absolutePath());
   }
-} // namespace TF
+} // namespace TotalFinder

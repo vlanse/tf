@@ -1,13 +1,7 @@
-/*
- * create_dir.cpp
- *
- *  Created on: Jan 7, 2016
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #include "create_dir.h"
 #include "ui_create_dir.h"
 
-namespace TF
+namespace TotalFinder
 {
   CreateDirDialog::CreateDirDialog(QWidget* parent)
     : QDialog(parent)
@@ -30,4 +24,4 @@ namespace TF
     }
     QDialog::keyPressEvent(event);
   }
-} // namespace TF
+} // namespace TotalFinder

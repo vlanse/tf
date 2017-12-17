@@ -54,7 +54,7 @@ set(SOURCE_FILES
         total-finder/tab_context.cpp
         total-finder/tab_context.h
         total-finder/tab_manager.cpp
-        total-finder/tab_manager.h)
+        total-finder/tab_manager.h total-finder/base_panel.cpp total-finder/base_panel.h)
 
 add_executable(total-finder MACOSX_BUNDLE ${SOURCE_FILES})
 

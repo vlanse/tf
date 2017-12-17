@@ -1,9 +1,3 @@
-/*
- * tab_manager.cpp
- *
- *  Created on: Dec 25, 2015
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #include "tab_manager.h"
 #include "tab_context.h"
 
@@ -15,7 +9,7 @@
 #include <QJsonObject>
 #include <QTabBar>
 
-namespace TF
+namespace TotalFinder
 {
   namespace
   {
@@ -287,4 +281,4 @@ namespace TF
 
     SaveContext();
   }
-} // namespace TF
+} // namespace TotalFinder

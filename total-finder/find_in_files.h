@@ -1,9 +1,3 @@
-/*
- * find_in_files.h
- *
- *  Created on: Jan 31, 2016
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #pragma once
 
 #include <QDialog>
@@ -14,7 +8,7 @@
 
 class  Ui_FindInFilesDialog;
 
-namespace TF
+namespace TotalFinder
 {
   class Worker;
   class SearchResultModel;
@@ -39,4 +33,4 @@ namespace TF
     Worker* Searcher;
     SearchResultModel* Model;
   };
-} // namespace TF
+} // namespace TotalFinder

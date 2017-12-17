@@ -19,7 +19,7 @@ int main(int argc, char** argv)
   QApplication app(argc, argv);
   QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
-  TF::MainWindow* main = new TF::MainWindow();
+  TotalFinder::MainWindow* main = new TotalFinder::MainWindow();
   main->show();
   return app.exec();
 }

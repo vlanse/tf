@@ -52,7 +52,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="TF::MyTabWidget" name="LeftTabs">
+        <widget class="TotalFinder::MyTabWidget" name="LeftTabs">
          <property name="styleSheet">
           <string notr="true">QTabWidget::pane {
    position: absolute;
@@ -99,7 +99,7 @@ QTabBar::tab:selected {
         </widget>
        </item>
        <item>
-        <widget class="TF::MyTabWidget" name="RightTabs">
+        <widget class="TotalFinder::MyTabWidget" name="RightTabs">
          <property name="styleSheet">
           <string notr="true">QTabWidget::pane {
    position: absolute;
@@ -182,7 +182,7 @@ QTabBar::tab:selected {
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TF::MyTabWidget</class>
+   <class>TotalFinder::MyTabWidget</class>
    <extends>QTabWidget</extends>
    <header>tab_manager.h</header>
    <container>1</container>

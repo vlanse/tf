@@ -1,16 +1,10 @@
-/*
- * tab_manager.h
- *
- *  Created on: Dec 25, 2015
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #pragma once
 
 #include <QHash>
 #include <QObject>
 #include <QTabWidget>
 
-namespace TF
+namespace TotalFinder
 {
   class DirViewPanel;
 
@@ -61,4 +55,4 @@ namespace TF
     SideContext LeftSide;
     SideContext RightSide;
   };
-} // namespace TF
+} // namespace TotalFinder

@@ -1,9 +1,3 @@
-/*
- * create_dir.h
- *
- *  Created on: Jan 7, 2016
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #pragma once
 
 #include <QDialog>
@@ -11,7 +5,7 @@
 
 class  Ui_CreateDirDialog;
 
-namespace TF
+namespace TotalFinder
 {
   class CreateDirDialog: public QDialog
   {
@@ -25,4 +19,4 @@ namespace TF
     QString DirName;
     Ui_CreateDirDialog* Ui;
   };
-} // namespace TF
+} // namespace TotalFinder

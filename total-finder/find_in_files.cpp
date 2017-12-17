@@ -1,9 +1,3 @@
-/*
- * find_in_files.cpp
- *
- *  Created on: Jan 31, 2016
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #include "find_in_files.h"
 #include "ui_find_in_files.h"
 #include "settings.h"
@@ -17,7 +11,7 @@
 #include <string>
 #include <functional>
 
-namespace TF
+namespace TotalFinder
 {
   class Worker: public QThread
   {
@@ -301,4 +295,4 @@ namespace TF
     }
     QDialog::keyPressEvent(event);
   }
-} // namespace TF
+} // namespace TotalFinder

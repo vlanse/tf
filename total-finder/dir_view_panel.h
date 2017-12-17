@@ -1,12 +1,6 @@
-/*
- * dir_view_panel.h
- *
- *  Created on: Dec 24, 2015
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
-
 #pragma once
 
+#include "base_panel.h"
 #include "tab_context.h"
 
 #include <QDir>
@@ -16,13 +10,13 @@
 
 class Ui_DirViewPanel;
 
-namespace TF
+namespace TotalFinder
 {
   class DirModel;
   class QuickSearchKeyEventHandler;
   class TabContext;
 
-  class DirViewPanel: public QWidget
+  class DirViewPanel: public BasePanel
   {
     Q_OBJECT
   public:
@@ -40,7 +34,6 @@ namespace TF
     void OnHeaderGeometryChanged();
     void OnItemActivated(const QModelIndex& index);
     void OnAddressBarEnter();
-    void OnKeyPressed(QKeyEvent event);
     void OnQuickSearch(const QString&);
     void OnFocusEvent(QFocusEvent event);
     void OnDirModelChange();
@@ -48,6 +41,7 @@ namespace TF
     void OnShowViewContextMenu(const QPoint& point);
     void OnRevealInFinder();
     void OnOpenTerminal();
+
   private:
     void HandleItemSelection(const QFileInfo& item);
     void HandleDirSelection(const QDir& dir);
@@ -55,6 +49,8 @@ namespace TF
     void SwitchQuickSearchMode();
 
     void UpdateCurrentSelection();
+
+    virtual void KeyHandler(Qt::KeyboardModifiers modifier, Qt::Key key);
 
     Ui_DirViewPanel* Ui;
 
@@ -66,4 +62,4 @@ namespace TF
     int CurrentRow;
     TabContext Context;
   };
-} // namespace TF
+} // namespace TotalFinder

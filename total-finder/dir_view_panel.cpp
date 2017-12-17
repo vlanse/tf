@@ -1,10 +1,3 @@
-/*
- * dir_view_panel.cpp
- *
- *  Created on: Dec 24, 2015
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
-
 #include "dir_view_panel.h"
 #include "ui_dir_view_panel.h"
 
@@ -26,7 +19,7 @@
 
 #include <functional>
 
-namespace TF
+namespace TotalFinder
 {
   namespace
   {
@@ -45,6 +38,14 @@ namespace TF
       {
         f.open(QIODevice::ReadWrite);
         f.close();
+      }
+    }
+
+    void InstallFilterForAllChildren(QWidget* parent, QObject* filter)
+    {
+      QList<QWidget*> widgets = parent->findChildren<QWidget*>();
+      for (auto &widget : widgets) {
+        widget->installEventFilter(filter);
       }
     }
   } // namespace
@@ -75,10 +76,13 @@ namespace TF
   }
 
   DirViewPanel::DirViewPanel(const TabContext& context, QWidget* parent)
-    : QWidget(parent)
+    : BasePanel(parent)
     , Model(new DirModel(this))
     , QuickSearchHandlerDelegate(
-        new QuickSearchKeyEventHandler(std::bind(&DirViewPanel::QuickSearchHandler, this, std::placeholders::_1), this)
+        new QuickSearchKeyEventHandler(
+          std::bind(&DirViewPanel::QuickSearchHandler, this, std::placeholders::_1),
+          this
+        )
       )
     , QuickSearchMode(false)
     , CurrentRow(0)
@@ -106,12 +110,6 @@ namespace TF
     Ui->DirView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(Ui->DirView, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(OnShowViewContextMenu(const QPoint&)));
 
-    KeyPressFilter* viewKeyDetector = new KeyPressFilter(this);
-    viewKeyDetector->InterceptKey(Qt::Key_Tab);
-    connect(viewKeyDetector, SIGNAL(KeyPressed(QKeyEvent)), SLOT(OnKeyPressed(QKeyEvent)));
-    connect(viewKeyDetector, SIGNAL(KeyPressed(QKeyEvent)), QuickSearchHandlerDelegate, SLOT(OnKeyPressed(QKeyEvent)));
-    Ui->DirView->installEventFilter(viewKeyDetector);
-
     KeyPressFilter* searchKeyDetector = new KeyPressFilter(this);
     connect(searchKeyDetector, SIGNAL(KeyPressed(QKeyEvent)), QuickSearchHandlerDelegate, SLOT(OnKeyPressed(QKeyEvent)));
     Ui->SearchEdit->installEventFilter(searchKeyDetector);
@@ -123,6 +121,9 @@ namespace TF
     connect(Ui->DirView, SIGNAL(activated(const QModelIndex&)), SLOT(OnItemActivated(const QModelIndex&)));
     connect(Ui->AddressBar, SIGNAL(returnPressed()), SLOT(OnAddressBarEnter()));
     connect(Ui->SearchEdit, SIGNAL(textEdited(const QString&)), SLOT(OnQuickSearch(const QString&)));
+
+    KeyPressFilter* baseKeyDetector = BasePanel::InstallKeyEventFilter();
+    connect(baseKeyDetector, SIGNAL(KeyPressed(QKeyEvent)), QuickSearchHandlerDelegate, SLOT(OnKeyPressed(QKeyEvent)));
   }
 
   QFileInfo DirViewPanel::GetCurrentSelection() const
@@ -132,7 +133,6 @@ namespace TF
 
   void DirViewPanel::OnShowViewContextMenu(const QPoint& point)
   {
-    // const QModelIndex index = Ui->DirView->indexAt(point);
     QMenu menu;
     QAction* revealAction = menu.addAction("Reveal in Finder");
     connect(revealAction, SIGNAL(triggered(bool)), SLOT(OnRevealInFinder()));
@@ -162,7 +162,7 @@ namespace TF
 
   void DirViewPanel::OnDirModelChange()
   {
-    // adjust selection after model changed
+    // adjust selection after model has changed
     QModelIndex currentIndex = Model->GetIndex(CurrentSelection);
     qDebug() << currentIndex;
     if (!currentIndex.isValid())
@@ -305,30 +305,30 @@ namespace TF
     Ui->DirView->setCurrentIndex(indices[0]);
   }
 
-  void DirViewPanel::OnKeyPressed(QKeyEvent event)
+  void DirViewPanel::KeyHandler(Qt::KeyboardModifiers modifiers, Qt::Key key)
   {
-    if (event.modifiers() == Qt::NoModifier)
+    if (modifiers == Qt::NoModifier)
     {
-      if (event.key() == Qt::Key_Return)
+      if (key == Qt::Key_Return)
       {
         HandleItemSelection(CurrentSelection);
       }
-      else if (event.key() == Qt::Key_Tab)
+      else if (key == Qt::Key_Tab)
       {
         qDebug("Request to change side detected");
         emit ChangeSideRequest(true);
       }
-      else if (event.key() == Qt::Key_F4)
+      else if (key == Qt::Key_F4)
       {
         qDebug() << "Request to edit file detected:" << CurrentSelection.absoluteFilePath();
         Shell::OpenEditorForFile(CurrentSelection.absoluteFilePath());
       }
-      else if (event.key() == Qt::Key_Delete) // Fn + Backspace
+      else if (key == Qt::Key_Delete) // Fn + Backspace
       {
         qDebug() << "Request to delete item, path is" << CurrentSelection.absoluteFilePath();
         Filesys::RemoveDirRecursive(Filesys::Dir(CurrentSelection.absoluteFilePath().toStdWString()));
       }
-      else if (event.key() == Qt::Key_F7)
+      else if (key == Qt::Key_F7)
       {
         QString newDirPath = Model->GetRoot().absolutePath() + "/";
         CreateDirDialog* dlg = new CreateDirDialog(this);
@@ -338,7 +338,7 @@ namespace TF
         qDebug() << "Request to create directory, path is" << newDirPath;
         Filesys::CreateDir(newDirPath.toStdWString());
       }
-      else if (event.key() == Qt::Key_F5)
+      else if (key == Qt::Key_F5)
       {
         const QDir& dest = Context.GetOppositeTabRootDir(this);
         qDebug() << "Request to copy file or dir" << CurrentSelection.absoluteFilePath() << "to" << dest.absolutePath();
@@ -348,9 +348,9 @@ namespace TF
         );
       }
     }
-    else if (event.modifiers() == Qt::ShiftModifier)
+    else if (modifiers == Qt::ShiftModifier)
     {
-      if (event.key() == Qt::Key_F4)
+      if (key == Qt::Key_F4)
       {
         QString filePath = Model->GetRoot().absolutePath() + "/";
         EditFileDialog* dlg = new EditFileDialog(this);
@@ -362,19 +362,19 @@ namespace TF
         Shell::OpenEditorForFile(filePath);
       }
     }
-    else if (event.modifiers() == Qt::ControlModifier)
+    else if (modifiers == Qt::ControlModifier)
     {
-      if (event.key() == Qt::Key_T)
+      if (key == Qt::Key_T)
       {
         qDebug() << "New tab request";
         emit AddNewTabRequest();
       }
-      else if (event.key() == Qt::Key_W)
+      else if (key == Qt::Key_W)
       {
         qDebug() << "Close tab request";
         emit CloseTabRequest();
       }
-      else if (event.key() == Qt::Key_F)
+      else if (key == Qt::Key_F)
       {
         const QString& searchRoot = Model->GetRoot().absolutePath();
         qDebug() << "Find in files request, root dir" << searchRoot;
@@ -382,9 +382,9 @@ namespace TF
         dlg.exec();
       }
     }
-    else if (event.modifiers() == Qt::MetaModifier)
+    else if (modifiers == Qt::MetaModifier)
     {
-      if (event.key() == Qt::Key_C)
+      if (key == Qt::Key_C)
       {
         qDebug() << "Open terminal request";
         Shell::OpenTerminal(Model->GetRoot().absolutePath());
@@ -417,5 +417,4 @@ namespace TF
 
     emit DirChanged();
   }
-} // namespace TF
-
+} // namespace TotalFinder

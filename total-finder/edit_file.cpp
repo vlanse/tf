@@ -1,13 +1,7 @@
-/*
- * edit_file.cpp
- *
- *  Created on: Jan 9, 2016
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #include "edit_file.h"
 #include <ui_edit_file.h>
 
-namespace TF
+namespace TotalFinder
 {
   EditFileDialog::EditFileDialog(QWidget* parent)
     : QDialog(parent)
@@ -30,4 +24,4 @@ namespace TF
     }
     QDialog::keyPressEvent(event);
   }
-} // namespace TF
+} // namespace TotalFinder

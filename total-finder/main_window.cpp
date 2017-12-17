@@ -14,7 +14,7 @@
 
 #include <QDebug>
 
-namespace TF
+namespace TotalFinder
 {
   MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -39,4 +39,4 @@ namespace TF
     Settings::SaveMainWindowGeometry(saveGeometry());
     QMainWindow::closeEvent(event);
   }
-} // namespace TF
+} // namespace TotalFinder

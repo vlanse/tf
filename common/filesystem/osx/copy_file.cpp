@@ -1,9 +1,3 @@
-/*
- * copy_file.cpp
- *
- *  Created on: Jan 11, 2016
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #include <common/filesystem.h>
 #include <common/string_utils.h>
 

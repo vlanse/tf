@@ -1,22 +1,16 @@
-/*
- * settings.cpp
- *
- *  Created on: Dec 27, 2015
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #include "settings.h"
 
 #include <QDebug>
 #include <QSettings>
 
-namespace TF
+namespace TotalFinder
 {
   namespace Settings
   {
     namespace
     {
-      const char COMPANY_NAME[] = "TF Inc";
-      const char PRODUCT_NAME[] = "TF";
+      const char COMPANY_NAME[] = "TotalFinder Inc";
+      const char PRODUCT_NAME[] = "TotalFinder";
 
       void SaveValue(const char* key, const QVariant& value, bool notifyChange = true)
       {
@@ -157,4 +151,4 @@ namespace TF
       emit SettingsChanged();
     }
   } // namespace Settings
-} // namespace TF
+} // namespace TotalFinder

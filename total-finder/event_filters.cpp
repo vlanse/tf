@@ -1,14 +1,8 @@
-/*
- * event_filters.cpp
- *
- *  Created on: Dec 27, 2015
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #include "event_filters.h"
 
 #include <QDebug>
 
-namespace TF
+namespace TotalFinder
 {
   KeyPressFilter::KeyPressFilter(QObject* parent)
     : QObject(parent)
@@ -50,4 +44,4 @@ namespace TF
     }
     return QObject::eventFilter(object, event);
   }
-} // namespace TF
+} // namespace TotalFinder

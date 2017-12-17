@@ -1,9 +1,3 @@
-/*
- * edit_file.h
- *
- *  Created on: Jan 9, 2016
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #pragma once
 
 #include <QDialog>
@@ -11,7 +5,7 @@
 
 class  Ui_EditFileDialog;
 
-namespace TF
+namespace TotalFinder
 {
   class EditFileDialog: public QDialog
   {
@@ -25,4 +19,4 @@ namespace TF
     QString FileName;
     Ui_EditFileDialog* Ui;
   };
-} // namespace TF
+} // namespace TotalFinder

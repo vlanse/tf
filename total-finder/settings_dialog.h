@@ -1,16 +1,10 @@
-/*
- * settings_dialog.h
- *
- *  Created on: Dec 27, 2015
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #pragma once
 
 #include <QDialog>
 
 class Ui_SettingsDialog;
 
-namespace TF
+namespace TotalFinder
 {
   class SettingsDialog: public QDialog
   {
@@ -25,4 +19,4 @@ namespace TF
 
     Ui_SettingsDialog* Ui;
   };
-} // namespace TF
+} // namespace TotalFinder

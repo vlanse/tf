@@ -1,10 +1,3 @@
-/*
- * settings.h
- *
- *  Created on: Dec 27, 2015
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
-
 #pragma once
 
 #include <QAbstractTableModel>
@@ -12,7 +5,7 @@
 #include <QDir>
 #include <QJsonDocument>
 
-namespace TF
+namespace TotalFinder
 {
   namespace Settings
   {
@@ -52,4 +45,4 @@ namespace TF
     void SaveTabs(const QJsonDocument& data);
     QJsonDocument LoadTabs();
   } // namespace Settings
-} // namespace TF
+} // namespace TotalFinder

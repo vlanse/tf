@@ -1,16 +1,10 @@
-/*
- * shell_utils.cpp
- *
- *  Created on: Feb 13, 2016
- *      Author: Vladimir Semenov (vlanse@gmail.com)
- */
 #include "shell_utils.h"
 
 #include <QDebug>
 #include <QProcess>
 #include <QStringList>
 
-namespace TF
+namespace TotalFinder
 {
   namespace Shell
   {
@@ -38,4 +32,4 @@ namespace TF
       QProcess::startDetached("open", args);
     }
   } // namespace Shell
-} // namespace TF
+} // namespace TotalFinder
