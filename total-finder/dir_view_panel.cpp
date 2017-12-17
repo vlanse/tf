@@ -411,6 +411,10 @@ namespace TotalFinder
       {
         emit SwitchNextTabRequest(BasePanel::Right);
       }
+      else if (key == Qt::Key_Down)
+      {
+        HandleDirSelection(CurrentSelection.absoluteFilePath());
+      }
     }
   }
 
