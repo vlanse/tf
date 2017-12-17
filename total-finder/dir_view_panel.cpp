@@ -77,7 +77,9 @@ namespace TF
   DirViewPanel::DirViewPanel(const TabContext& context, QWidget* parent)
     : QWidget(parent)
     , Model(new DirModel(this))
-    , QuickSearchHandlerDelegate(new QuickSearchKeyEventHandler(std::bind(&DirViewPanel::QuickSearchHandler, this, std::placeholders::_1), this))
+    , QuickSearchHandlerDelegate(
+        new QuickSearchKeyEventHandler(std::bind(&DirViewPanel::QuickSearchHandler, this, std::placeholders::_1), this)
+      )
     , QuickSearchMode(false)
     , CurrentRow(0)
     , Context(context)
@@ -92,7 +94,11 @@ namespace TF
     Model->SetRoot(QDir("/"));
     Ui->DirView->setModel(Model);
     connect(Model, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(OnDirModelChange()));
-    connect(Ui->DirView->selectionModel(), SIGNAL(currentChanged(const QModelIndex, const QModelIndex&)), SLOT(OnSelectionChanged(const QModelIndex&, const QModelIndex&)));
+    connect(
+      Ui->DirView->selectionModel(),
+      SIGNAL(currentChanged(const QModelIndex, const QModelIndex&)),
+      SLOT(OnSelectionChanged(const QModelIndex&, const QModelIndex&))
+    );
 
     connect(Ui->DirView->horizontalHeader(), SIGNAL(sectionResized(int, int, int)), SLOT(OnHeaderGeometryChanged()));
     Ui->DirView->horizontalHeader()->restoreState(Settings::LoadViewHeaderState());
@@ -168,7 +174,10 @@ namespace TF
         currentIndex = Model->index(CurrentRow - 1, 0);
       }
     }
-    Ui->DirView->selectionModel()->setCurrentIndex(currentIndex, QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
+    Ui->DirView->selectionModel()->setCurrentIndex(
+      currentIndex,
+      QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows
+    );
 
     CurrentRow = currentIndex.row();
     CurrentSelection = Model->GetItem(currentIndex);
