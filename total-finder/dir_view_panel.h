@@ -24,9 +24,10 @@ namespace TotalFinder
     void SetRootDir(const QDir& dir);
     QDir GetRootDir() const;
     QFileInfo GetCurrentSelection() const;
-    void SetFocusOnView();
+    virtual void SetFocus();
+    virtual QString GetName() const;
   signals:
-    void DirChanged();
+    void TitleChanged(const QString& newTitle);
     void ChangeSideRequest(bool force);
     void AddNewTabRequest();
     void CloseTabRequest();

@@ -9,16 +9,28 @@ namespace TotalFinder
   {
   }
 
+  bool TabContext::IsOppositeTabDirView(DirViewPanel* currentTab) const
+  {
+    DirViewPanel* opposite = qobject_cast<DirViewPanel*>(Tabs->GetOppositeTab(currentTab));
+    return opposite != NULL;
+  }
+
   QFileInfo TabContext::GetOppositeTabSelection(DirViewPanel* currentTab) const
   {
-    DirViewPanel* opposite = Tabs->GetOppositeTab(currentTab);
-    return opposite->GetCurrentSelection();
+    DirViewPanel* opposite = qobject_cast<DirViewPanel*>(Tabs->GetOppositeTab(currentTab));
+    if (opposite) {
+      return opposite->GetCurrentSelection();
+    }
+    return QFileInfo();
   }
 
   QDir TabContext::GetOppositeTabRootDir(DirViewPanel* currentTab) const
   {
-    DirViewPanel* opposite = Tabs->GetOppositeTab(currentTab);
-    return opposite->GetRootDir();
+    DirViewPanel* opposite = qobject_cast<DirViewPanel*>(Tabs->GetOppositeTab(currentTab));
+    if (opposite) {
+      return opposite->GetRootDir();
+    }
+    return QDir();
   }
 
   void TabContext::ChangeSide(bool force)

@@ -40,14 +40,6 @@ namespace TotalFinder
         f.close();
       }
     }
-
-    void InstallFilterForAllChildren(QWidget* parent, QObject* filter)
-    {
-      QList<QWidget*> widgets = parent->findChildren<QWidget*>();
-      for (auto &widget : widgets) {
-        widget->installEventFilter(filter);
-      }
-    }
   } // namespace
 
   class QuickSearchKeyEventHandler: public QObject
@@ -124,6 +116,11 @@ namespace TotalFinder
 
     KeyPressFilter* baseKeyDetector = BasePanel::InstallKeyEventFilter();
     connect(baseKeyDetector, SIGNAL(KeyPressed(QKeyEvent)), QuickSearchHandlerDelegate, SLOT(OnKeyPressed(QKeyEvent)));
+  }
+
+  QString DirViewPanel::GetName() const
+  {
+    return this->GetRootDir().isRoot() ? "/" : this->GetRootDir().dirName();
   }
 
   QFileInfo DirViewPanel::GetCurrentSelection() const
@@ -211,7 +208,7 @@ namespace TotalFinder
     return Model->GetRoot();
   }
 
-  void DirViewPanel::SetFocusOnView()
+  void DirViewPanel::SetFocus()
   {
     Ui->DirView->setFocus();
   }
@@ -340,6 +337,11 @@ namespace TotalFinder
       }
       else if (key == Qt::Key_F5)
       {
+        if (!Context.IsOppositeTabDirView(this))
+        {
+          qDebug() << "Opposite tab is not dir view, skip copy request";
+          return;
+        }
         const QDir& dest = Context.GetOppositeTabRootDir(this);
         qDebug() << "Request to copy file or dir" << CurrentSelection.absoluteFilePath() << "to" << dest.absolutePath();
         Filesys::Copy(
@@ -415,6 +417,6 @@ namespace TotalFinder
 
     Ui->DirView->scrollTo(Ui->DirView->selectionModel()->currentIndex());
 
-    emit DirChanged();
+    emit TitleChanged(GetName());
   }
 } // namespace TotalFinder

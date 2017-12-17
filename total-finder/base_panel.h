@@ -16,6 +16,8 @@ namespace TotalFinder
 
   public:
     BasePanel(QWidget* parent = 0);
+    virtual void SetFocus() = 0;
+    virtual QString GetName() const = 0;
 
   signals:
     void ChangeSideRequest(bool force);

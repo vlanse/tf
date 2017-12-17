@@ -7,6 +7,7 @@
 namespace TotalFinder
 {
   class DirViewPanel;
+  class BasePanel;
 
   struct SideContext
   {
@@ -31,26 +32,30 @@ namespace TotalFinder
   class TabManager: public QObject
   {
     Q_OBJECT
+
   public:
     TabManager(
       QTabWidget* leftContainer,
       QTabWidget* rightContainer,
       QObject* parent
     );
-    DirViewPanel* GetOppositeTab(DirViewPanel* current) const;
+    BasePanel* GetOppositeTab(BasePanel* current) const;
+
   public slots:
     void OnChangeSideRequest(bool force);
+
   private slots:
-    void OnDirChange();
+    void OnTabTitleChange(const QString& newTitle);
     void OnAddNewTabRequest();
     void OnCloseTabRequest();
     void SaveContext();
+
   private:
     void RestoreContext();
     void SetFocusOnView();
 
     const SideContext* GetActiveSide() const;
-    const SideContext* FindSideForTab(DirViewPanel* tab) const;
+    const SideContext* FindSideForTab(BasePanel* tab) const;
 
     SideContext LeftSide;
     SideContext RightSide;
