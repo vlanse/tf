@@ -21,6 +21,15 @@ namespace TotalFinder
         qDebug() << "Intercepted key: " <<  keyEvent->text();
         return true;
       }
+
+      for (auto m: ModifiersToIntercept)
+      {
+        if (keyEvent->modifiers() & m)
+        {
+          qDebug() << "Intercepted key modifier: " <<  m;
+          return true;
+        }
+      }
     }
     return QObject::eventFilter(object, event);
   }
@@ -28,6 +37,11 @@ namespace TotalFinder
   void KeyPressFilter::InterceptKey(int keyCode)
   {
     CodesToIntercept << keyCode;
+  }
+
+  void KeyPressFilter::InterceptModifier(int modifier)
+  {
+    ModifiersToIntercept << modifier;
   }
 
   FocusFilter::FocusFilter(QObject* parent)

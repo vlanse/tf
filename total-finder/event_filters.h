@@ -13,12 +13,14 @@ namespace TotalFinder
   public:
     KeyPressFilter(QObject* parent);
     void InterceptKey(int keyCode);
+    void InterceptModifier(int modifier);
   signals:
     void KeyPressed(QKeyEvent event);
   protected:
     bool eventFilter(QObject* object, QEvent* event);
   private:
     QList<int> CodesToIntercept;
+    QList<int> ModifiersToIntercept;
   };
 
   class FocusFilter: public QObject

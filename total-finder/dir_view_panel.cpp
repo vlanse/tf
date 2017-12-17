@@ -114,7 +114,7 @@ namespace TotalFinder
     connect(Ui->AddressBar, SIGNAL(returnPressed()), SLOT(OnAddressBarEnter()));
     connect(Ui->SearchEdit, SIGNAL(textEdited(const QString&)), SLOT(OnQuickSearch(const QString&)));
 
-    KeyPressFilter* baseKeyDetector = BasePanel::InstallKeyEventFilter();
+    KeyPressFilter* baseKeyDetector = BasePanel::InstallKeyEventFilter(QWidgetList() << Ui->DirView << Ui->AddressBar);
     connect(baseKeyDetector, SIGNAL(KeyPressed(QKeyEvent)), QuickSearchHandlerDelegate, SLOT(OnKeyPressed(QKeyEvent)));
   }
 
@@ -390,6 +390,18 @@ namespace TotalFinder
       {
         qDebug() << "Open terminal request";
         Shell::OpenTerminal(Model->GetRoot().absolutePath());
+      }
+    }
+    else if (modifiers == (Qt::KeypadModifier | Qt::ControlModifier))
+    {
+      if (key == Qt::Key_Up)
+      {
+        qDebug() << "Go to parent dir request";
+        QDir currentRoot = GetRootDir();
+        if (currentRoot.cdUp())
+        {
+          HandleDirSelection(currentRoot);
+        }
       }
     }
   }

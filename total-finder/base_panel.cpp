@@ -26,12 +26,23 @@ namespace TotalFinder
     KeyHandler(event.modifiers(), static_cast<Qt::Key>(event.key()));
   }
 
-  KeyPressFilter* BasePanel::InstallKeyEventFilter()
+  KeyPressFilter* BasePanel::InstallKeyEventFilter(const QWidgetList& widgets)
   {
     KeyPressFilter* baseKeyDetector = new KeyPressFilter(this);
     baseKeyDetector->InterceptKey(Qt::Key_Tab);
+    baseKeyDetector->InterceptModifier(Qt::ControlModifier);
     connect(baseKeyDetector, SIGNAL(KeyPressed(QKeyEvent)), SLOT(OnKeyPressed(QKeyEvent)));
-    InstallFilterForAllChildren(this, baseKeyDetector);
+    if (widgets.empty())
+    {
+      InstallFilterForAllChildren(this, baseKeyDetector);
+    }
+    else
+    {
+      for (auto w: widgets)
+      {
+        w->installEventFilter(baseKeyDetector);
+      }
+    }
     return baseKeyDetector;
   }
 } // namespace TotalFinder

@@ -31,6 +31,6 @@ namespace TotalFinder
     virtual void KeyHandler(Qt::KeyboardModifiers modifier, Qt::Key key) = 0;
 
   protected:
-    KeyPressFilter* InstallKeyEventFilter();
+    KeyPressFilter* InstallKeyEventFilter(const QWidgetList& widgets = QWidgetList());
   };
 } // namespace TotalFinder
