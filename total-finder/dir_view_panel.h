@@ -19,6 +19,7 @@ namespace TotalFinder
   class DirViewPanel: public BasePanel
   {
     Q_OBJECT
+
   public:
     DirViewPanel(const TabContext& context, QWidget* parent = 0);
     void SetRootDir(const QDir& dir);
@@ -26,11 +27,7 @@ namespace TotalFinder
     QFileInfo GetCurrentSelection() const;
     virtual void SetFocus();
     virtual QString GetName() const;
-  signals:
-    void TitleChanged(const QString& newTitle);
-    void ChangeSideRequest(bool force);
-    void AddNewTabRequest();
-    void CloseTabRequest();
+
   private slots:
     void OnHeaderGeometryChanged();
     void OnItemActivated(const QModelIndex& index);

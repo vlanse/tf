@@ -26,6 +26,10 @@ namespace TotalFinder
       QObject::connect(tab, SIGNAL(AddNewTabRequest()), tabs, SLOT(OnAddNewTabRequest()));
       QObject::connect(tab, SIGNAL(CloseTabRequest()), tabs, SLOT(OnCloseTabRequest()));
       QObject::connect(tab, SIGNAL(TitleChanged(const QString&)), tabs, SLOT(OnTabTitleChange(const QString&)));
+      QObject::connect(
+        tab, SIGNAL(SwitchNextTabRequest(int)),
+        tabs, SLOT(OnSwitchNextTab(int))
+      );
     }
 
     void RestoreTabs(const QJsonValue& tabsObject, TabManager* tabs, SideContext& side)
@@ -201,6 +205,18 @@ namespace TotalFinder
     tab->SetFocus();
 
     SaveContext();
+  }
+
+  void TabManager::OnSwitchNextTab(int direction)
+  {
+    const SideContext* side = GetActiveSide();
+    int newIndex = side->Container->currentIndex();
+    newIndex += direction == BasePanel::Right ? 1: -1;
+    if ( newIndex < 0 || newIndex > (side->Container->count() - 1))
+    {
+      return;
+    }
+    side->Container->setCurrentIndex(newIndex);
   }
 
   void TabManager::OnCloseTabRequest()

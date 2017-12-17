@@ -4,10 +4,11 @@
 #include <QObject>
 #include <QTabWidget>
 
+#include "base_panel.h"
+
 namespace TotalFinder
 {
   class DirViewPanel;
-  class BasePanel;
 
   struct SideContext
   {
@@ -48,6 +49,7 @@ namespace TotalFinder
     void OnTabTitleChange(const QString& newTitle);
     void OnAddNewTabRequest();
     void OnCloseTabRequest();
+    void OnSwitchNextTab(int direction);
     void SaveContext();
 
   private:

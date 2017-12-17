@@ -403,6 +403,14 @@ namespace TotalFinder
           HandleDirSelection(currentRoot);
         }
       }
+      else if (key == Qt::Key_Left)
+      {
+        emit SwitchNextTabRequest(BasePanel::Left);
+      }
+      else if (key == Qt::Key_Right)
+      {
+        emit SwitchNextTabRequest(BasePanel::Right);
+      }
     }
   }
 
