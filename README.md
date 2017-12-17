@@ -5,12 +5,12 @@ Inspired by widely-recognized Total Commander file manager for Windows.
 
 Built with Qt5 Open Source
 
-##Features
+## Features
 
-###Implemented
+### Implemented
 * Multi-tab user interface
 
-###In development
+### In development
 * Search in files and folders (with regexp support etc)
 * Support for mounting network shares (cifs, nfs etc)
 * Integration with other programs (text editors, diff viewers, VCS)
@@ -18,7 +18,7 @@ Built with Qt5 Open Source
 * Plugins support
 * Ability to replace OSX Finder
 
-##How to build
+## How to build
 * download and install [Qt5 Open Source](https://www.qt.io)
 * download and install [CMake](https://cmake.org)
 * set variable ``CMAKE_PREFIX_PATH`` to point to your Qt installation, e.g. 
