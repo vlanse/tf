@@ -1,10 +1,3 @@
-/*
- * main.cpp
- *
- *  Created on: Dec 19, 2015
- *      Author: Vladimir Semenov
- */
-
 #include <common/trace.h>
 
 #include <QApplication>

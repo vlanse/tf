@@ -1,10 +1,3 @@
-/*
- * main_window.cpp
- *
- *  Created on: Dec 19, 2015
- *      Author: Vladimir Semenov
- */
-
 #include "main_window.h"
 #include "ui_main_window.h"
 

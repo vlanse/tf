@@ -1,9 +1,3 @@
-/*
- * main_window.cpp
- *
- *  Created on: Dec 19, 2015
- *      Author: Vladimir Semenov
- */
 #pragma once
 
 #include <QMainWindow>
