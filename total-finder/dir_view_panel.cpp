@@ -310,11 +310,6 @@ namespace TotalFinder
       {
         HandleItemSelection(CurrentSelection);
       }
-      else if (key == Qt::Key_Tab)
-      {
-        qDebug("Request to change side detected");
-        emit ChangeSideRequest(true);
-      }
       else if (key == Qt::Key_F4)
       {
         qDebug() << "Request to edit file detected:" << CurrentSelection.absoluteFilePath();
@@ -366,17 +361,7 @@ namespace TotalFinder
     }
     else if (modifiers == Qt::ControlModifier)
     {
-      if (key == Qt::Key_T)
-      {
-        qDebug() << "New tab request";
-        emit AddNewTabRequest();
-      }
-      else if (key == Qt::Key_W)
-      {
-        qDebug() << "Close tab request";
-        emit CloseTabRequest();
-      }
-      else if (key == Qt::Key_F)
+      if (key == Qt::Key_F)
       {
         const QString& searchRoot = Model->GetRoot().absolutePath();
         qDebug() << "Find in files request, root dir" << searchRoot;
@@ -402,14 +387,6 @@ namespace TotalFinder
         {
           HandleDirSelection(currentRoot);
         }
-      }
-      else if (key == Qt::Key_Left)
-      {
-        emit SwitchNextTabRequest(BasePanel::Left);
-      }
-      else if (key == Qt::Key_Right)
-      {
-        emit SwitchNextTabRequest(BasePanel::Right);
       }
       else if (key == Qt::Key_Down)
       {
