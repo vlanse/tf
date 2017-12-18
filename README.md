@@ -1,4 +1,4 @@
-Total Finder - simple file manager for Mac OSX
+Total Finder - file manager for Mac OSX
 ===============================
 
 Inspired by widely-recognized Total Commander file manager for Windows.
