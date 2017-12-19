@@ -41,6 +41,7 @@ namespace TotalFinder
       QObject* parent
     );
     BasePanel* GetOppositeTab(BasePanel* current) const;
+    void AddHelpPanel();
 
   public slots:
     void OnChangeSideRequest(bool force);

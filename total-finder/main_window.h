@@ -13,12 +13,17 @@ namespace TotalFinder
   class MainWindow: public QMainWindow
   {
     Q_OBJECT
+
   public:
     MainWindow(QWidget* parent = 0);
+
   private slots:
     void ShowSettings();
+    void ShowHelpPanel();
+
   protected:
     virtual void closeEvent(QCloseEvent* event);
+
   private:
     Ui_MainWindow* Ui;
     TabManager* Tabs;

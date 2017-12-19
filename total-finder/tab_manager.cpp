@@ -2,6 +2,7 @@
 #include "tab_context.h"
 
 #include "dir_view_panel.h"
+#include "help_panel.h"
 #include "settings.h"
 
 #include <QDebug>
@@ -158,6 +159,18 @@ namespace TotalFinder
     return qobject_cast<BasePanel*>(oppositeSide->Container->currentWidget());
   }
 
+  void TabManager::AddHelpPanel()
+  {
+    const SideContext* side = GetActiveSide();
+    if (!side)
+    {
+      return;
+    }
+
+    HelpPanel* tab = new HelpPanel(TabContext(this));
+    AddTab(this, tab, *side);
+  }
+
   void TabManager::RestoreContext()
   {
     const QJsonDocument data = Settings::LoadTabs();
@@ -197,10 +210,12 @@ namespace TotalFinder
   {
     const SideContext* side = GetActiveSide();
 
-    DirViewPanel* tab = new DirViewPanel(TabContext(this));
-    const DirViewPanel* currentTab = qobject_cast<const DirViewPanel*>(side->Container->currentWidget());
+    TabContext tabContext(this);
+    DirViewPanel* tab = new DirViewPanel(tabContext);
 
-    tab->SetRootDir(currentTab->GetRootDir());
+    const DirViewPanel* currentTab = qobject_cast<const DirViewPanel*>(side->Container->currentWidget());
+    tab->SetRootDir(currentTab? currentTab->GetRootDir(): QDir(ROOT_DIR_NAME));
+
     AddTab(this, tab, *side, side->Container->currentIndex() + 1);
     tab->SetFocus();
 
@@ -222,7 +237,7 @@ namespace TotalFinder
   void TabManager::OnCloseTabRequest()
   {
     const SideContext* side = GetActiveSide();
-    if (!side || side->Container->count() == 1)
+    if (!side)
     {
       return;
     }
@@ -231,6 +246,12 @@ namespace TotalFinder
     BasePanel* tab = qobject_cast<BasePanel*>(side->Container->widget(indexToRemove));
     side->Container->removeTab(indexToRemove);
     tab->deleteLater();
+
+    if (side->Container->count() == 0)
+    {
+      HelpPanel* tab = new HelpPanel(TabContext(this));
+      AddTab(this, tab, *side);
+    }
 
     const int currentIndex = side->Container->currentIndex();
     if (currentIndex != -1)

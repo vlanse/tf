@@ -16,6 +16,7 @@ namespace TotalFinder
     Ui->setupUi(this);
     Tabs = new TabManager(Ui->LeftTabs, Ui->RightTabs, this);
     connect(Ui->ActionPreferences, SIGNAL(triggered()), SLOT(ShowSettings()));
+    connect(Ui->ActionHelp, SIGNAL(triggered()), SLOT(ShowHelpPanel()));
 
     restoreGeometry(Settings::LoadMainWindowGeometry());
   }
@@ -25,6 +26,11 @@ namespace TotalFinder
     qDebug() << "Settings window requested";
     SettingsDialog settings(this);
     settings.exec();
+  }
+
+  void MainWindow::ShowHelpPanel()
+  {
+    Tabs->AddHelpPanel();
   }
 
   void MainWindow::closeEvent(QCloseEvent* event)

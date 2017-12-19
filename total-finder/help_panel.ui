@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>HelpDialog</class>
- <widget class="QWidget" name="HelpDialog">
+ <class>HelpPanel</class>
+ <widget class="QWidget" name="HelpPanel">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>440</width>
-    <height>555</height>
+    <height>612</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>38</height>
+       <height>46</height>
       </size>
      </property>
     </spacer>
@@ -184,6 +184,13 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_21">
+        <property name="text">
+         <string>Find in files</string>
+        </property>
+       </widget>
+      </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_17">
         <property name="text">
@@ -195,6 +202,13 @@
        <widget class="QLabel" name="label_20">
         <property name="text">
          <string>F4</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_22">
+        <property name="text">
+         <string>⌘F</string>
         </property>
        </widget>
       </item>
@@ -219,17 +233,13 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_21">
+      <item row="5" column="0" colspan="2">
+       <widget class="QLabel" name="label_28">
         <property name="text">
-         <string>Search</string>
+         <string>Start typing to find file or folder in active tab, or hold ⌥ when typing to find tab by its name</string>
         </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="label_22">
-        <property name="text">
-         <string>⌘F</string>
+        <property name="wordWrap">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

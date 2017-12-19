@@ -1,4 +1,4 @@
-##Qt debug helpers for lldb
+## Qt debug helpers for lldb
 
 Useful to look inside Qt data types when debugging.
 

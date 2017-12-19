@@ -9,6 +9,7 @@ namespace TotalFinder
   {
     void InstallFilterForAllChildren(QWidget* parent, QObject* filter)
     {
+      parent->installEventFilter(filter);
       QList<QWidget*> widgets = parent->findChildren<QWidget*>();
       for (auto &widget : widgets) {
         widget->installEventFilter(filter);
@@ -39,10 +40,12 @@ namespace TotalFinder
       if (key == Qt::Key_Left)
       {
         emit SwitchNextTabRequest(BasePanel::Left);
+        return;
       }
       else if (key == Qt::Key_Right)
       {
         emit SwitchNextTabRequest(BasePanel::Right);
+        return;
       }
     }
     else if (modifiers == Qt::ControlModifier)
@@ -50,10 +53,12 @@ namespace TotalFinder
       if (key == Qt::Key_T)
       {
         emit AddNewTabRequest();
+        return;
       }
       else if (key == Qt::Key_W)
       {
         emit CloseTabRequest();
+        return;
       }
     }
 

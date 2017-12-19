@@ -162,7 +162,15 @@ QTabBar::tab:selected {
     </property>
     <addaction name="ActionPreferences"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="ActionHelp"/>
+    <addaction name="ActionAbout"/>
+   </widget>
    <addaction name="menuTF"/>
+   <addaction name="menuHelp"/>
   </widget>
   <action name="actionSettings">
    <property name="text">
@@ -177,6 +185,16 @@ QTabBar::tab:selected {
   <action name="ActionPreferences">
    <property name="text">
     <string>Preferences</string>
+   </property>
+  </action>
+  <action name="ActionHelp">
+   <property name="text">
+    <string>Keymap</string>
+   </property>
+  </action>
+  <action name="ActionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>
