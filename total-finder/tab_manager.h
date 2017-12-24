@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QHash>
+#include <QMainWindow>
 #include <QObject>
 #include <QTabWidget>
 
@@ -38,7 +39,7 @@ namespace TotalFinder
     TabManager(
       QTabWidget* leftContainer,
       QTabWidget* rightContainer,
-      QObject* parent
+      QMainWindow* mainWindow
     );
     BasePanel* GetOppositeTab(BasePanel* current) const;
     void AddHelpPanel();
@@ -51,6 +52,7 @@ namespace TotalFinder
     void OnAddNewTabRequest();
     void OnCloseTabRequest();
     void OnSwitchNextTab(int direction);
+    void OnUpdateStatusText(const QString& text);
     void SaveContext();
 
   private:
@@ -62,5 +64,6 @@ namespace TotalFinder
 
     SideContext LeftSide;
     SideContext RightSide;
+    QMainWindow* MainWindow;
   };
 } // namespace TotalFinder

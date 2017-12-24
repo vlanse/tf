@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QStatusBar>
 #include <QTabBar>
 
 namespace TotalFinder
@@ -27,9 +28,9 @@ namespace TotalFinder
       QObject::connect(tab, SIGNAL(AddNewTabRequest()), tabs, SLOT(OnAddNewTabRequest()));
       QObject::connect(tab, SIGNAL(CloseTabRequest()), tabs, SLOT(OnCloseTabRequest()));
       QObject::connect(tab, SIGNAL(TitleChanged(const QString&)), tabs, SLOT(OnTabTitleChange(const QString&)));
+      QObject::connect(tab, SIGNAL(SwitchNextTabRequest(int)), tabs, SLOT(OnSwitchNextTab(int)));
       QObject::connect(
-        tab, SIGNAL(SwitchNextTabRequest(int)),
-        tabs, SLOT(OnSwitchNextTab(int))
+        tab, SIGNAL(UpdateStatusTextRequest(const QString&)), tabs, SLOT(OnUpdateStatusText(const QString&))
       );
     }
 
@@ -137,9 +138,10 @@ namespace TotalFinder
   TabManager::TabManager(
     QTabWidget* leftContainer,
     QTabWidget* rightContainer,
-    QObject* parent
+    QMainWindow* mainWindow
   )
-    : QObject(parent)
+    : QObject(mainWindow)
+    , MainWindow(mainWindow)
   {
     LeftSide.Active = true;
     LeftSide.Container = leftContainer;
@@ -315,5 +317,13 @@ namespace TotalFinder
     side->Container->setTabText(tabIndex, newTitle);
 
     SaveContext();
+  }
+
+  void TabManager::OnUpdateStatusText(const QString &text)
+  {
+    if (MainWindow->statusBar())
+    {
+      MainWindow->statusBar()->showMessage(text);
+    }
   }
 } // namespace TotalFinder

@@ -30,7 +30,7 @@ namespace TotalFinder
     this->setFocus();
   }
 
-  void HelpPanel::KeyHandler(Qt::KeyboardModifiers modifiers, Qt::Key key)
+  void HelpPanel::KeyHandler(Qt::KeyboardModifiers modifiers, Qt::Key key, const QString& /*text*/)
   {
   }
 } // namespace TotalFinder

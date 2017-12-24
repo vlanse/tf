@@ -23,7 +23,7 @@ namespace TotalFinder
     virtual QString GetName() const;
 
   private:
-    virtual void KeyHandler(Qt::KeyboardModifiers modifier, Qt::Key key);
+    virtual void KeyHandler(Qt::KeyboardModifiers modifier, Qt::Key key, const QString& text);
 
     Ui_HelpPanel* Ui;
     TabContext Context;

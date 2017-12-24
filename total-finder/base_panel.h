@@ -31,12 +31,13 @@ namespace TotalFinder
     void AddNewTabRequest();
     void CloseTabRequest();
     void SwitchNextTabRequest(int direction);
+    void UpdateStatusTextRequest(const QString& text);
 
   private slots:
     void OnKeyPressed(QKeyEvent event);
 
   private:
-    virtual void KeyHandler(Qt::KeyboardModifiers modifier, Qt::Key key) = 0;
+    virtual void KeyHandler(Qt::KeyboardModifiers modifier, Qt::Key key, const QString& text) = 0;
 
   protected:
     KeyPressFilter* InstallKeyEventFilter(const QWidgetList& widgets = QWidgetList());

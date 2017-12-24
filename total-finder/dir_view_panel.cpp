@@ -42,41 +42,11 @@ namespace TotalFinder
     }
   } // namespace
 
-  class QuickSearchKeyEventHandler: public QObject
-  {
-    Q_OBJECT
-  public:
-    typedef std::function<void (QKeyEvent)> HandlerFunc;
-
-    QuickSearchKeyEventHandler(HandlerFunc handler, QObject* parent);
-  private slots:
-    void OnKeyPressed(QKeyEvent event);
-  private:
-    HandlerFunc Handler;
-  };
-
 #include "dir_view_panel.moc"
-
-  QuickSearchKeyEventHandler::QuickSearchKeyEventHandler(HandlerFunc handler, QObject* parent)
-    : QObject(parent)
-    , Handler(handler)
-  {}
-
-  void QuickSearchKeyEventHandler::OnKeyPressed(QKeyEvent event)
-  {
-    Handler(event);
-  }
 
   DirViewPanel::DirViewPanel(const TabContext& context, QWidget* parent)
     : BasePanel(parent)
     , Model(new DirModel(this))
-    , QuickSearchHandlerDelegate(
-        new QuickSearchKeyEventHandler(
-          std::bind(&DirViewPanel::QuickSearchHandler, this, std::placeholders::_1),
-          this
-        )
-      )
-    , QuickSearchMode(false)
     , CurrentRow(0)
     , Context(context)
   {
@@ -102,20 +72,14 @@ namespace TotalFinder
     Ui->DirView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(Ui->DirView, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(OnShowViewContextMenu(const QPoint&)));
 
-    KeyPressFilter* searchKeyDetector = new KeyPressFilter(this);
-    connect(searchKeyDetector, SIGNAL(KeyPressed(QKeyEvent)), QuickSearchHandlerDelegate, SLOT(OnKeyPressed(QKeyEvent)));
-    Ui->SearchEdit->installEventFilter(searchKeyDetector);
-
     FocusFilter* focusDetector = new FocusFilter(this);
     connect(focusDetector, SIGNAL(GotFocusEvent(QFocusEvent)), SLOT(OnFocusEvent(QFocusEvent)));
     Ui->DirView->installEventFilter(focusDetector);
 
     connect(Ui->DirView, SIGNAL(activated(const QModelIndex&)), SLOT(OnItemActivated(const QModelIndex&)));
     connect(Ui->AddressBar, SIGNAL(returnPressed()), SLOT(OnAddressBarEnter()));
-    connect(Ui->SearchEdit, SIGNAL(textEdited(const QString&)), SLOT(OnQuickSearch(const QString&)));
 
-    KeyPressFilter* baseKeyDetector = BasePanel::InstallKeyEventFilter(QWidgetList() << Ui->DirView << Ui->AddressBar);
-    connect(baseKeyDetector, SIGNAL(KeyPressed(QKeyEvent)), QuickSearchHandlerDelegate, SLOT(OnKeyPressed(QKeyEvent)));
+    BasePanel::InstallKeyEventFilter(QWidgetList() << Ui->DirView << Ui->AddressBar);
   }
 
   QString DirViewPanel::GetName() const
@@ -217,10 +181,6 @@ namespace TotalFinder
   {
     if (event.gotFocus())
     {
-      if (QuickSearchMode)
-      {
-        SwitchQuickSearchMode();
-      }
       emit ChangeSideRequest(false);
     }
   }
@@ -236,73 +196,7 @@ namespace TotalFinder
     Ui->DirView->setFocus();
   }
 
-  void DirViewPanel::SwitchQuickSearchMode()
-  {
-    QuickSearchMode = !QuickSearchMode;
-
-    Ui->SearchEdit->setVisible(QuickSearchMode);
-    Ui->SearchEdit->clear();
-
-    if (QuickSearchMode)
-    {
-      Ui->SearchEdit->setFocus();
-    }
-    else
-    {
-      Ui->DirView->setFocus();
-    }
-  }
-
-  void DirViewPanel::QuickSearchHandler(QKeyEvent event)
-  {
-    if (
-      !event.text().isEmpty() && !QuickSearchMode &&
-      !(event.key() == Qt::Key_Return || event.key() == Qt::Key_Tab)
-      )
-    {
-      qDebug() << "Quick search mode switch, key is\"" << event.text() << "\"";
-      SwitchQuickSearchMode();
-      PostKeyEvent(Ui->SearchEdit, event);
-      return;
-    }
-
-    if (QuickSearchMode)
-    {
-      if (event.key() == Qt::Key_Up || event.key() == Qt::Key_Down || event.key() == Qt::Key_F4)
-      {
-        SwitchQuickSearchMode();
-        PostKeyEvent(Ui->DirView, event);
-      }
-      else if ((event.modifiers() & Qt::MetaModifier) && event.key() == Qt::Key_C)
-      {
-        Ui->SearchEdit->clear();
-      }
-      else if (event.key() == Qt::Key_Escape)
-      {
-        SwitchQuickSearchMode();
-      }
-      else if (event.key() == Qt::Key_Return)
-      {
-        SwitchQuickSearchMode();
-        HandleItemSelection(CurrentSelection);
-      }
-    }
-  }
-
-  void DirViewPanel::OnQuickSearch(const QString& search)
-  {
-    qDebug() << "Quick search for:" << search;
-    const QModelIndexList& indices = Model->Search(search + "*");
-    if (indices.empty())
-    {
-      QKeyEvent ev(QEvent::KeyPress, Qt::Key_Backspace, Qt::NoModifier);
-      PostKeyEvent(Ui->SearchEdit, ev);
-      return;
-    }
-    Ui->DirView->setCurrentIndex(indices[0]);
-  }
-
-  void DirViewPanel::KeyHandler(Qt::KeyboardModifiers modifiers, Qt::Key key)
+  void DirViewPanel::KeyHandler(Qt::KeyboardModifiers modifiers, Qt::Key key, const QString& text)
   {
     if (modifiers == Qt::NoModifier)
     {
@@ -343,6 +237,11 @@ namespace TotalFinder
           Filesys::FileInfo(CurrentSelection.absoluteFilePath().toStdWString()),
           Filesys::FileInfo(dest.absolutePath().toStdWString())
         );
+      }
+      else if (!text.isEmpty() && !(key == Qt::Key_Return || key == Qt::Key_Tab))
+      {
+        // this means that some alphanumeric key has been pressed
+        // leaving this for later possible use
       }
     }
     else if (modifiers == Qt::ShiftModifier)

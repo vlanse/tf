@@ -21,18 +21,17 @@ namespace TotalFinder
     Q_OBJECT
 
   public:
-    DirViewPanel(const TabContext& context, QWidget* parent = 0);
+    explicit DirViewPanel(const TabContext& context, QWidget* parent = nullptr);
     void SetRootDir(const QDir& dir);
     QDir GetRootDir() const;
     QFileInfo GetCurrentSelection() const;
-    virtual void SetFocus();
-    virtual QString GetName() const;
+    void SetFocus() override;
+    QString GetName() const override;
 
   private slots:
     void OnHeaderGeometryChanged();
     void OnItemActivated(const QModelIndex& index);
     void OnAddressBarEnter();
-    void OnQuickSearch(const QString&);
     void OnFocusEvent(QFocusEvent event);
     void OnDirModelChange();
     void OnSelectionChanged(const QModelIndex& current, const QModelIndex& previous);
@@ -43,18 +42,12 @@ namespace TotalFinder
   private:
     void HandleItemSelection(const QFileInfo& item);
     void HandleDirSelection(const QDir& dir);
-    void QuickSearchHandler(QKeyEvent event);
-    void SwitchQuickSearchMode();
 
-    void UpdateCurrentSelection();
-
-    virtual void KeyHandler(Qt::KeyboardModifiers modifier, Qt::Key key);
+    void KeyHandler(Qt::KeyboardModifiers modifier, Qt::Key key, const QString& text) override;
 
     Ui_DirViewPanel* Ui;
 
     DirModel* Model;
-    QuickSearchKeyEventHandler* QuickSearchHandlerDelegate;
-    bool QuickSearchMode;
 
     QFileInfo CurrentSelection;
     int CurrentRow;

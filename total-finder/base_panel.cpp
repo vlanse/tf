@@ -27,7 +27,8 @@ namespace TotalFinder
     const Qt::KeyboardModifiers modifiers = event.modifiers();
     auto key = static_cast<Qt::Key>(event.key());
 
-    if (modifiers == Qt::NoModifier) {
+    if (modifiers == Qt::NoModifier)
+    {
       if (key == Qt::Key_Tab)
       {
         qDebug("Request to change side detected");
@@ -62,7 +63,7 @@ namespace TotalFinder
       }
     }
 
-    KeyHandler(modifiers, key);
+    KeyHandler(modifiers, key, event.text());
   }
 
   KeyPressFilter* BasePanel::InstallKeyEventFilter(const QWidgetList& widgets)
