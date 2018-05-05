@@ -150,9 +150,10 @@
  </widget>
  <tabstops>
   <tabstop>FilenameMaskEdit</tabstop>
-  <tabstop>SearchInEdit</tabstop>
   <tabstop>FindTextEdit</tabstop>
+  <tabstop>SearchInEdit</tabstop>
   <tabstop>ResultView</tabstop>
+  <tabstop>scrollArea</tabstop>
  </tabstops>
  <resources/>
  <connections/>
