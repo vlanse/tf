@@ -33,22 +33,26 @@ namespace TotalFinder
     QString Where;
     QRegExp What;
     QString Content;
-    int Step;
     QDir::Filters DirFilters;
   };
 
   class SearchResultModel: public QAbstractListModel
   {
     Q_OBJECT
+    const qint64 MODEL_UPDATE_INTERVAL_MILLISECONDS = 1000;
+
   public:
     SearchResultModel(QObject* parent);
     void AddItem(const QString& item);
+    void FlushResults();
     void Clear();
     virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex& index = QModelIndex(), int role = Qt::DisplayRole) const;
   private:
-    QStringList Data;
-    QStringList ToInsert;
+    void FlushReadyToInsertRows();
+
+    QStringList ModelData;
+    QStringList RowsReadyToInsert;
     QElapsedTimer RefreshTimer;
   };
 
@@ -57,7 +61,6 @@ namespace TotalFinder
   Worker::Worker(QObject* parent)
     : QThread(parent)
     , CancelFlag(false)
-    , Step(0)
     , DirFilters(Settings::LoadDirFilters())
   {
   }
@@ -87,8 +90,6 @@ namespace TotalFinder
   void Worker::run()
   {
     qDebug() << "Start search";
-    QRegExp search = QRegExp(What);
-    Step = 0;
 
     Filesys::WalkDir(
       Filesys::Dir(Where.toStdWString()),
@@ -146,7 +147,7 @@ namespace TotalFinder
       {
         QFile f(fullPath);
         f.open(QIODevice::ReadOnly);
-        QString part;
+        QString chunk;
         do
         {
           if (CancelFlag)
@@ -154,14 +155,14 @@ namespace TotalFinder
             QThread::terminate();
           }
 
-          part = f.read(1024);
-          if (part.indexOf(Content, Qt::CaseInsensitive) != -1)
+          chunk = f.read(1024);
+          if (chunk.indexOf(Content, Qt::CaseInsensitive) != -1)
           {
             emit GotResult(fullPath);
             return true;
           }
         }
-        while (!part.isEmpty());
+        while (!chunk.isEmpty());
         f.close();
       }
     }
@@ -173,41 +174,51 @@ namespace TotalFinder
   {
   }
 
+  void SearchResultModel::FlushReadyToInsertRows()
+  {
+    const QModelIndex parent = QModelIndex();
+    const int rows = rowCount(parent);
+    QAbstractListModel::beginInsertRows(parent, rows, rows);
+    ModelData << RowsReadyToInsert;
+    QAbstractListModel::endInsertRows();
+    RefreshTimer.invalidate();
+  }
+
   void SearchResultModel::AddItem(const QString& item)
   {
     if (!RefreshTimer.isValid())
     {
       RefreshTimer.start();
     }
-
-    if (RefreshTimer.elapsed() < 1000)
+    if (RefreshTimer.elapsed() < MODEL_UPDATE_INTERVAL_MILLISECONDS)
     {
-      ToInsert << item;
+      RowsReadyToInsert << item;
     }
     else
     {
-      const QModelIndex parent = QModelIndex();
-      const int rows = rowCount(parent);
-      QAbstractListModel::beginInsertRows(parent, rows, rows);
-      Data << ToInsert;
-      QAbstractListModel::endInsertRows();
-
-      RefreshTimer.invalidate();
+      FlushReadyToInsertRows();
       RefreshTimer.start();
     }
+  }
+
+  void SearchResultModel::FlushResults()
+  {
+    FlushReadyToInsertRows();
+    RowsReadyToInsert.clear();
   }
 
   void SearchResultModel::Clear()
   {
     const QModelIndex parent = QModelIndex();
     QAbstractListModel::beginRemoveRows(parent, 0, rowCount() - 1);
-    Data.clear();
+    RowsReadyToInsert.clear();
+    ModelData.clear();
     QAbstractListModel::endRemoveRows();
   }
 
   int SearchResultModel::rowCount(const QModelIndex& parent) const
   {
-    return Data.size();
+    return ModelData.size();
   }
 
   QVariant SearchResultModel::data(const QModelIndex& index, int role) const
@@ -217,7 +228,7 @@ namespace TotalFinder
       return QVariant();
     }
 
-    const QString& currentItem = Data[index.row()];
+    const QString& currentItem = ModelData[index.row()];
 
    if (role == Qt::DisplayRole)
    {
@@ -237,13 +248,12 @@ namespace TotalFinder
     Ui->SearchInEdit->setText(QString::fromStdWString(startDir.GetPath()));
     connect(Ui->ResultView, SIGNAL(activated(const QModelIndex&)), SLOT(OnResultItemActivated(const QModelIndex&)));
     Ui->ResultView->setModel(Model);
-    Ui->ResultView->setUniformItemSizes(true);
     Ui->ResultView->setLayoutMode(QListView::Batched);
     Ui->ResultView->setBatchSize(10);
     connect(Searcher, SIGNAL(GotResult(const QString&)), SLOT(OnGotResult(const QString&)));
     connect(Searcher, SIGNAL(Progress(const QString&)), SLOT(OnProgress(const QString&)));
     connect(Searcher, SIGNAL(Complete()), SLOT(OnComplete()));
-    Ui->SearchForEdit->setFocus();
+    Ui->FilenameMaskEdit->setFocus();
   }
 
   FindInFilesDialog::~FindInFilesDialog()
@@ -261,7 +271,7 @@ namespace TotalFinder
     Model->Clear();
     Searcher->StartSearch(
       Ui->SearchInEdit->text(),
-      Ui->SearchForEdit->lineEdit()->text(),
+      Ui->FilenameMaskEdit->lineEdit()->text(),
       Ui->FindTextEdit->lineEdit()->text()
     );
   }
@@ -278,6 +288,7 @@ namespace TotalFinder
 
   void FindInFilesDialog::OnComplete()
   {
+    Model->FlushResults();
     Ui->ResultView->setFocus();
     qDebug() << "search complete, found" << Model->rowCount() << "items";
     Ui->ProgressLabel->setText(QString("Search complete, %1 items found").arg(Model->rowCount()));

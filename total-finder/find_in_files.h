@@ -18,9 +18,9 @@ namespace TotalFinder
     Q_OBJECT
   public:
     FindInFilesDialog(const Filesys::Dir& startDir, QWidget* parent);
-    ~FindInFilesDialog();
+    ~FindInFilesDialog() override;
   protected:
-    virtual void keyPressEvent(QKeyEvent* event);
+    void keyPressEvent(QKeyEvent* event) override;
   private slots:
     void OnResultItemActivated(const QModelIndex& item);
     void OnGotResult(const QString& item);

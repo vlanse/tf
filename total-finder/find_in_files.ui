@@ -18,37 +18,37 @@
     <widget class="QWidget" name="widget_2" native="true">
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
-       <widget class="QLabel" name="SearchForLabel">
-        <property name="text">
-         <string>Search for:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
        <widget class="QLabel" name="SearchInLabel">
         <property name="text">
-         <string>Search in:</string>
+         <string>Search in directory</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="2">
+      <item row="0" column="1">
        <widget class="QLineEdit" name="SearchInEdit"/>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="FindTextLabel">
+      <item row="1" column="0">
+       <widget class="QLabel" name="FilenameMaskLabel">
         <property name="text">
-         <string>Find text:</string>
+         <string>Filename mask</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QComboBox" name="SearchForEdit">
+      <item row="1" column="1">
+       <widget class="QComboBox" name="FilenameMaskEdit">
         <property name="editable">
          <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
+      <item row="2" column="0">
+       <widget class="QLabel" name="FindTextLabel">
+        <property name="text">
+         <string>Text to find</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
        <widget class="QComboBox" name="FindTextEdit">
         <property name="editable">
          <bool>true</bool>
@@ -84,6 +84,9 @@
        <widget class="QListView" name="ResultView">
         <property name="selectionBehavior">
          <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <property name="uniformItemSizes">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -146,7 +149,7 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>SearchForEdit</tabstop>
+  <tabstop>FilenameMaskEdit</tabstop>
   <tabstop>SearchInEdit</tabstop>
   <tabstop>FindTextEdit</tabstop>
   <tabstop>ResultView</tabstop>
